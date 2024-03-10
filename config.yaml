@@ -10,7 +10,7 @@ uvloop: True
 ignore_invalid_instruments: False
 
 # Use multiprocessing for backends
-backend_multiprocessing: False
+backend_multiprocessing: True
 
 # Secrets for exchanges
 binance_futures:
@@ -33,8 +33,8 @@ bitfinex:
     key_id: null
     key_secret: null
 coinbase:
-    key_id: null
-    key_secret: null
+    key_id: S17oJuuiGqHvqBfQ
+    key_secret: HQzc1T0Evr79g6CM3zWDYVANx2Hr0F5n
     key_passphrase: null
 deribit:
     key_id: null
