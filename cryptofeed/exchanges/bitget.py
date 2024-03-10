@@ -8,11 +8,20 @@ associated with this software.
 import base64
 import hmac
 import logging
+from collections import defaultdict
 from decimal import Decimal
 from time import time
 from typing import Dict, List, Tuple, Union
-from collections import defaultdict
 
+from cryptofeed.types import (
+    Ticker,
+    Trade,
+    Candle,
+    OrderBook,
+    Balance,
+    Position,
+    OrderInfo,
+)
 from yapic import json
 
 from cryptofeed.connection import (
@@ -46,17 +55,7 @@ from cryptofeed.defines import (
 from cryptofeed.exceptions import BadChecksum
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol, str_to_symbol
-from cryptofeed.types import (
-    Ticker,
-    Trade,
-    Candle,
-    OrderBook,
-    Balance,
-    Position,
-    OrderInfo,
-)
 from cryptofeed.util.time import timedelta_str_to_sec
-
 
 LOG = logging.getLogger("feedhandler")
 

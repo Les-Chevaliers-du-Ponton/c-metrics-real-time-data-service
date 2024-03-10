@@ -5,11 +5,10 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
 import datetime
 import time
+from collections import defaultdict
 
-from redis import asyncio as aioredis
 from yapic import json
 
 from cryptofeed.backends.backend import (
@@ -17,6 +16,7 @@ from cryptofeed.backends.backend import (
     BackendCallback,
     BackendQueue,
 )
+from redis import asyncio as aioredis
 
 
 class RedisCallback(BackendQueue):

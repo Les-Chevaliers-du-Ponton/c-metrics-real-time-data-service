@@ -2,23 +2,24 @@
 Copyright (C) 2021 - STS Digital
 """
 
-import itertools
-import logging
-from decimal import Decimal
-import time
-from typing import Dict, List, Tuple, Union
-from collections import defaultdict
 import hashlib
 import hmac
+import itertools
+import logging
+import time
+from collections import defaultdict
+from decimal import Decimal
+from typing import Dict, List, Tuple, Union
 
+from cryptofeed.types import Trade, Ticker, OrderBook, OrderInfo, Balance, Fill
 from yapic import json
+
 from cryptofeed.connection import (
     AsyncConnection,
     RestEndpoint,
     Routes,
     WebsocketEndpoint,
 )
-
 from cryptofeed.defines import (
     ASK,
     BALANCES,
@@ -49,8 +50,6 @@ from cryptofeed.defines import (
 from cryptofeed.exceptions import MissingSequenceNumber
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol, str_to_symbol
-from cryptofeed.types import Trade, Ticker, OrderBook, OrderInfo, Balance, Fill
-
 
 LOG = logging.getLogger("feedhandler")
 

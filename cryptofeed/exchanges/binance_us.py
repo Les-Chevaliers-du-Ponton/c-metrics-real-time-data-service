@@ -12,7 +12,6 @@ from cryptofeed.defines import BINANCE_US
 from cryptofeed.exchanges.binance import Binance
 from cryptofeed.exchanges.mixins.binance_rest import BinanceUSRestMixin
 
-
 LOG = logging.getLogger("feedhandler")
 
 

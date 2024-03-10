@@ -5,9 +5,9 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
 import asyncio
 import logging
+from collections import defaultdict
 from textwrap import wrap
 
 from yapic import json
@@ -17,7 +17,6 @@ from cryptofeed.backends.backend import (
     BackendBookCallback,
     BackendCallback,
 )
-
 
 LOG = logging.getLogger("feedhandler")
 

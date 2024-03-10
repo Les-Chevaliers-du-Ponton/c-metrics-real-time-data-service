@@ -5,16 +5,27 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
-from decimal import Decimal
-from typing import Dict, Tuple
-from yapic import json
 import asyncio
 import base64
 import hmac
 import logging
-import requests
 import time
+from collections import defaultdict
+from decimal import Decimal
+from typing import Dict, Tuple
+
+import requests
+from cryptofeed.types import (
+    OrderBook,
+    Trade,
+    Ticker,
+    Funding,
+    OpenInterest,
+    Liquidation,
+    OrderInfo,
+    Candle,
+)
+from yapic import json
 
 from cryptofeed.connection import (
     AsyncConnection,
@@ -53,21 +64,10 @@ from cryptofeed.defines import (
     UNFILLED,
     LIMIT,
 )
+from cryptofeed.exceptions import BadChecksum
 from cryptofeed.exchanges.mixins.okx_rest import OKXRestMixin
 from cryptofeed.feed import Feed
-from cryptofeed.exceptions import BadChecksum
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import (
-    OrderBook,
-    Trade,
-    Ticker,
-    Funding,
-    OpenInterest,
-    Liquidation,
-    OrderInfo,
-    Candle,
-)
-
 
 LOG = logging.getLogger("feedhandler")
 

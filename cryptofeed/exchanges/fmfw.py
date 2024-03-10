@@ -5,11 +5,12 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
+import logging
 from collections import defaultdict
 from decimal import Decimal
-import logging
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade, Ticker, Candle
 from yapic import json
 
 from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
@@ -27,9 +28,7 @@ from cryptofeed.defines import (
 from cryptofeed.exceptions import MissingSequenceNumber
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import OrderBook, Trade, Ticker, Candle
 from cryptofeed.util.time import timedelta_str_to_sec
-
 
 LOG = logging.getLogger("feedhandler")
 

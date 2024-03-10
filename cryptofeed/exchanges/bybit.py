@@ -6,14 +6,24 @@ associated with this software.
 """
 
 import hmac
+import logging
 import time
 from collections import defaultdict
-from cryptofeed.symbols import Symbol, str_to_symbol
-import logging
+from datetime import datetime as dt
 from decimal import Decimal
 from typing import Dict, Tuple, Union
-from datetime import datetime as dt
 
+from cryptofeed.types import (
+    OrderBook,
+    Trade,
+    Index,
+    OpenInterest,
+    Funding,
+    OrderInfo,
+    Fill,
+    Candle,
+    Liquidation,
+)
 from yapic import json
 
 from cryptofeed.connection import (
@@ -52,18 +62,7 @@ from cryptofeed.defines import (
     PERPETUAL,
 )
 from cryptofeed.feed import Feed
-from cryptofeed.types import (
-    OrderBook,
-    Trade,
-    Index,
-    OpenInterest,
-    Funding,
-    OrderInfo,
-    Fill,
-    Candle,
-    Liquidation,
-)
-
+from cryptofeed.symbols import Symbol, str_to_symbol
 
 LOG = logging.getLogger("feedhandler")
 

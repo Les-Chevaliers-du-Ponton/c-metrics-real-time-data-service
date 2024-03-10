@@ -11,6 +11,7 @@ import hmac
 import time
 from decimal import Decimal
 
+from cryptofeed.types import OrderBook, Candle
 from yapic import json
 
 from cryptofeed.defines import (
@@ -34,7 +35,6 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exchange import RestExchange
 from cryptofeed.util.time import timedelta_str_to_sec
-from cryptofeed.types import OrderBook, Candle
 
 
 class BitfinexRestMixin(RestExchange):

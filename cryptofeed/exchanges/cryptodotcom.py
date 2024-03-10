@@ -7,24 +7,23 @@ associated with this software.
 
 import asyncio
 import logging
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
-from collections import defaultdict
 
+from cryptofeed.types import Trade, Ticker, Candle, OrderBook
 from yapic import json
+
 from cryptofeed.connection import (
     AsyncConnection,
     RestEndpoint,
     Routes,
     WebsocketEndpoint,
 )
-
 from cryptofeed.defines import BUY, CANDLES, CRYPTODOTCOM, L2_BOOK, SELL, TICKER, TRADES
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
 from cryptofeed.util.time import timedelta_str_to_sec
-from cryptofeed.types import Trade, Ticker, Candle, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

@@ -5,12 +5,13 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
+from cryptofeed.types import Balance, OrderInfo, Position
 from yapic import json
-from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 
+from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 from cryptofeed.defines import (
     BALANCES,
     BINANCE_DELIVERY,
@@ -26,8 +27,6 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exchanges.binance import Binance
 from cryptofeed.exchanges.mixins.binance_rest import BinanceDeliveryRestMixin
-from cryptofeed.types import Balance, OrderInfo, Position
-
 
 LOG = logging.getLogger("feedhandler")
 

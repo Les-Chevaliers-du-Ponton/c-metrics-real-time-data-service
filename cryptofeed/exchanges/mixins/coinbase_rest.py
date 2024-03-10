@@ -7,15 +7,15 @@ associated with this software.
 
 import asyncio
 import base64
-from cryptofeed.util.time import timedelta_str_to_sec
-import hmac
 import hashlib
-from datetime import datetime as dt
-from decimal import Decimal
+import hmac
 import logging
 import time
+from datetime import datetime as dt
+from decimal import Decimal
 from typing import Optional, Union, List
 
+from cryptofeed.types import OrderBook, Candle, Trade, Ticker, OrderInfo, Balance
 from yapic import json
 
 from cryptofeed.defines import (
@@ -45,8 +45,7 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exceptions import UnexpectedMessage
 from cryptofeed.exchange import RestExchange
-from cryptofeed.types import OrderBook, Candle, Trade, Ticker, OrderInfo, Balance
-
+from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")
 

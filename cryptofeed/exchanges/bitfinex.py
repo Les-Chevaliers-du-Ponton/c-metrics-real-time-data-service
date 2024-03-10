@@ -5,12 +5,13 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
+import logging
 from collections import defaultdict
 from decimal import Decimal
 from functools import partial
-import logging
 from typing import Dict, Tuple
 
+from cryptofeed.types import Ticker, Trade, OrderBook
 from yapic import json
 
 from cryptofeed.connection import (
@@ -34,11 +35,9 @@ from cryptofeed.defines import (
     PERPETUAL,
 )
 from cryptofeed.exceptions import MissingSequenceNumber
+from cryptofeed.exchanges.mixins.bitfinex_rest import BitfinexRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.bitfinex_rest import BitfinexRestMixin
-from cryptofeed.types import Ticker, Trade, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

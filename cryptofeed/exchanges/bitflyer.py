@@ -5,11 +5,12 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import Ticker, Trade, OrderBook
 from yapic import json
 
 from cryptofeed.connection import (
@@ -32,8 +33,6 @@ from cryptofeed.defines import (
 )
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import Ticker, Trade, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

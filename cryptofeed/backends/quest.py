@@ -10,7 +10,6 @@ import logging
 from cryptofeed.backends.backend import BackendCallback
 from cryptofeed.backends.socket import SocketCallback
 
-
 LOG = logging.getLogger("feedhandler")
 
 

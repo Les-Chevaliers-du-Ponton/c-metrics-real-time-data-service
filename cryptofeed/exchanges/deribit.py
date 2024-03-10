@@ -1,11 +1,23 @@
-from collections import defaultdict
-import logging
-from decimal import Decimal
-from typing import Dict, Tuple
 import hashlib
 import hmac
+import logging
+from collections import defaultdict
 from datetime import datetime
+from decimal import Decimal
+from typing import Dict, Tuple
 
+from cryptofeed.types import (
+    OrderBook,
+    Trade,
+    Ticker,
+    Funding,
+    OpenInterest,
+    Liquidation,
+    OrderInfo,
+    Balance,
+    L1Book,
+    Fill,
+)
 from yapic import json
 
 from cryptofeed.connection import (
@@ -41,22 +53,10 @@ from cryptofeed.defines import (
     SPOT,
 )
 from cryptofeed.defines import CURRENCY, BALANCES, ORDER_INFO, FILLS, L1_BOOK
-from cryptofeed.feed import Feed
 from cryptofeed.exceptions import MissingSequenceNumber
-from cryptofeed.symbols import Symbol
 from cryptofeed.exchanges.mixins.deribit_rest import DeribitRestMixin
-from cryptofeed.types import (
-    OrderBook,
-    Trade,
-    Ticker,
-    Funding,
-    OpenInterest,
-    Liquidation,
-    OrderInfo,
-    Balance,
-    L1Book,
-    Fill,
-)
+from cryptofeed.feed import Feed
+from cryptofeed.symbols import Symbol
 
 LOG = logging.getLogger("feedhandler")
 

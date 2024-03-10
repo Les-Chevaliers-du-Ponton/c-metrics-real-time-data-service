@@ -12,7 +12,6 @@ from cryptofeed.callback import BookCallback
 from cryptofeed.defines import L2_BOOK
 from cryptofeed.exchanges import Coinbase
 
-
 PREV = {}
 counter = 0
 

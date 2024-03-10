@@ -6,11 +6,12 @@ associated with this software.
 """
 
 import asyncio
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from typing import Tuple, Callable, List, Union
 
 from aiohttp.typedefs import StrOrURL
+from cryptofeed.types import OrderBook
 
 from cryptofeed.callback import Callback
 from cryptofeed.connection import AsyncConnection, HTTPAsyncConn, WSAsyncConn
@@ -32,8 +33,6 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exceptions import BidAskOverlapping
 from cryptofeed.exchange import Exchange
-from cryptofeed.types import OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

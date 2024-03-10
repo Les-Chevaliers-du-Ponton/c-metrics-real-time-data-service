@@ -6,14 +6,14 @@ associated with this software.
 """
 
 import logging
-from decimal import Decimal
-from typing import Tuple, Dict
 from datetime import datetime as dt
 from datetime import timedelta
+from decimal import Decimal
+from typing import Tuple, Dict
 
+from cryptofeed.types import Trade
 from yapic import json
 
-from cryptofeed.symbols import Symbol, Symbols
 from cryptofeed.connection import (
     AsyncConnection,
     RestEndpoint,
@@ -22,8 +22,7 @@ from cryptofeed.connection import (
 )
 from cryptofeed.defines import BUY, BITHUMB, SELL, TRADES
 from cryptofeed.feed import Feed
-from cryptofeed.types import Trade
-
+from cryptofeed.symbols import Symbol, Symbols
 
 LOG = logging.getLogger("feedhandler")
 

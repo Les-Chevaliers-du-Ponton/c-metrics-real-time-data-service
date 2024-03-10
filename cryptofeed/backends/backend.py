@@ -7,9 +7,8 @@ associated with this software.
 
 import asyncio
 from asyncio.queues import Queue
-from multiprocessing import Pipe, Process
 from contextlib import asynccontextmanager
-
+from multiprocessing import Pipe, Process
 
 SHUTDOWN_SENTINEL = "STOP"
 

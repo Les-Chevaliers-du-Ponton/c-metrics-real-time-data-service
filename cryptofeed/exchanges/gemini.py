@@ -5,16 +5,17 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
-import logging
-from decimal import Decimal
-from typing import Dict, List, Tuple, Union
 import base64
 import hashlib
 import hmac
-import time
 import itertools
+import logging
+import time
+from collections import defaultdict
+from decimal import Decimal
+from typing import Dict, List, Tuple, Union
 
+from cryptofeed.types import OrderBook, Trade, OrderInfo
 from yapic import json
 
 from cryptofeed.connection import (
@@ -40,11 +41,9 @@ from cryptofeed.defines import (
     TRADES,
     ORDER_INFO,
 )
+from cryptofeed.exchanges.mixins.gemini_rest import GeminiRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.gemini_rest import GeminiRestMixin
-from cryptofeed.types import OrderBook, Trade, OrderInfo
-
 
 LOG = logging.getLogger("feedhandler")
 

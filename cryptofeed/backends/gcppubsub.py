@@ -5,22 +5,22 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
-import os
 import io
-from typing import Optional
-from typing import IO
-from typing import Union
+import os
+from collections import defaultdict
 from typing import AnyStr
+from typing import IO
+from typing import Optional
+from typing import Union
 
 import aiohttp
 import google.api_core.exceptions
-from google.cloud import pubsub_v1
-from yapic import json
 
 # Use gcloud.aio.pubsub for asyncio
 # https://github.com/talkiq/gcloud-aio
 from gcloud.aio.pubsub import PublisherClient, PubsubMessage
+from google.cloud import pubsub_v1
+from yapic import json
 
 from cryptofeed.backends.backend import BackendBookCallback, BackendCallback
 

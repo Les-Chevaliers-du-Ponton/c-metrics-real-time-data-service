@@ -7,10 +7,10 @@ associated with this software.
 
 from collections import defaultdict
 
-import zmq
 import zmq.asyncio
 from yapic import json
 
+import zmq
 from cryptofeed.backends.backend import (
     BackendQueue,
     BackendBookCallback,

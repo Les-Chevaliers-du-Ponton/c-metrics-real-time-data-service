@@ -5,11 +5,12 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from decimal import Decimal
-from collections import defaultdict
 import logging
+from collections import defaultdict
+from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade, Ticker, Candle
 from yapic import json
 
 from cryptofeed.connection import (
@@ -30,11 +31,9 @@ from cryptofeed.defines import (
     TRADES,
 )
 from cryptofeed.exceptions import BadChecksum
+from cryptofeed.exchanges.mixins.kraken_rest import KrakenRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.kraken_rest import KrakenRestMixin
-from cryptofeed.types import OrderBook, Trade, Ticker, Candle
-
 
 LOG = logging.getLogger("feedhandler")
 

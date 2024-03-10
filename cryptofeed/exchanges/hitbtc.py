@@ -6,8 +6,8 @@ associated with this software.
 """
 
 import logging
-from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 
+from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 from cryptofeed.defines import (
     BALANCES,
     CANDLES,

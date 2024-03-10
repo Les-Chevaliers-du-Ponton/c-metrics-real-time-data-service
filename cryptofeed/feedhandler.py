@@ -6,12 +6,13 @@ associated with this software.
 """
 
 import asyncio
-from cryptofeed.connection import Connection
 import logging
 import signal
-from signal import SIGABRT, SIGINT, SIGTERM
 import sys
+from signal import SIGABRT, SIGINT, SIGTERM
 from typing import List
+
+from cryptofeed.connection import Connection
 
 try:
     # unix / macos only

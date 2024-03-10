@@ -9,6 +9,7 @@ import logging
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade
 from yapic import json
 
 from cryptofeed.connection import (
@@ -21,8 +22,6 @@ from cryptofeed.defines import BID, ASK, BLOCKCHAIN, BUY, L2_BOOK, L3_BOOK, SELL
 from cryptofeed.exceptions import MissingSequenceNumber
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import OrderBook, Trade
-
 
 LOG = logging.getLogger("feedhandler")
 

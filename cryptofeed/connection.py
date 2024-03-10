@@ -5,26 +5,25 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
+import asyncio
+import atexit
 import logging
 import time
-import asyncio
 from asyncio import Queue, CancelledError
 from contextlib import asynccontextmanager, suppress
-from typing import List, Union, AsyncIterable
-from decimal import Decimal
-import atexit
 from dataclasses import dataclass
+from decimal import Decimal
+from typing import List, Union, AsyncIterable
 
-from aiohttp.client_reqrep import ClientResponse
+import aiohttp
 import requests
 import websockets
-import aiohttp
+from aiohttp.client_reqrep import ClientResponse
 from aiohttp.typedefs import StrOrURL
 from yapic import json as json_parser
 
 from cryptofeed.exceptions import ConnectionClosed
 from cryptofeed.symbols import str_to_symbol
-
 
 LOG = logging.getLogger("feedhandler")
 

@@ -9,7 +9,6 @@ import os
 
 import yaml
 
-
 _default_config = {
     "uvloop": True,
     "log": {"filename": "feedhandler.log", "level": "WARNING"},

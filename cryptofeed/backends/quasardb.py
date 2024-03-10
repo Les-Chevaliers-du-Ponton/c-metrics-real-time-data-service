@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
-import quasardb.pool as pool
-import quasardb.numpy as qdbnp
+
 import numpy as np
+import quasardb.numpy as qdbnp
+import quasardb.pool as pool
+
 from cryptofeed.backends.backend import BackendCallback
 
 

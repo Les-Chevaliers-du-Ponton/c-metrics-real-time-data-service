@@ -5,12 +5,12 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
-from cryptofeed.symbols import Symbol
 import logging
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade
 from yapic import json
 
 from cryptofeed.connection import (
@@ -20,9 +20,9 @@ from cryptofeed.connection import (
     WebsocketEndpoint,
 )
 from cryptofeed.defines import BID, ASK, BUY, DYDX, L2_BOOK, SELL, TRADES
-from cryptofeed.feed import Feed
 from cryptofeed.exchanges.mixins.dydx_rest import dYdXRestMixin
-from cryptofeed.types import OrderBook, Trade
+from cryptofeed.feed import Feed
+from cryptofeed.symbols import Symbol
 
 LOG = logging.getLogger("feedhandler")
 

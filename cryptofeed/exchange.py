@@ -6,11 +6,13 @@ associated with this software.
 """
 
 import asyncio
-from decimal import Decimal
 import logging
 from datetime import datetime as dt, timezone
+from decimal import Decimal
 from typing import AsyncGenerator, Dict, List, Optional, Tuple, Union
 
+from cryptofeed.config import Config
+from cryptofeed.connection import HTTPSync, RestEndpoint
 from cryptofeed.defines import (
     CANDLES,
     FUNDING,
@@ -25,15 +27,12 @@ from cryptofeed.defines import (
     ORDER_INFO,
     FILLS,
 )
-from cryptofeed.symbols import Symbol, Symbols
-from cryptofeed.connection import HTTPSync, RestEndpoint
 from cryptofeed.exceptions import (
     UnsupportedDataFeed,
     UnsupportedSymbol,
     UnsupportedTradingOption,
 )
-from cryptofeed.config import Config
-
+from cryptofeed.symbols import Symbol, Symbols
 
 LOG = logging.getLogger("feedhandler")
 

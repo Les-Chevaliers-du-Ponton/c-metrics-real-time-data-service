@@ -10,10 +10,11 @@ import hashlib
 import hmac
 import logging
 import time
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
-from collections import defaultdict
 
+from cryptofeed.types import OrderBook, Trade
 from yapic import json
 
 from cryptofeed.config import Config
@@ -24,10 +25,9 @@ from cryptofeed.connection import (
     WebsocketEndpoint,
 )
 from cryptofeed.defines import BID, ASK, BUY, COINBASE, L2_BOOK, SELL, TRADES
+from cryptofeed.exchanges.mixins.coinbase_rest import CoinbaseRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.coinbase_rest import CoinbaseRestMixin
-from cryptofeed.types import OrderBook, Trade
 
 LOG = logging.getLogger("feedhandler")
 

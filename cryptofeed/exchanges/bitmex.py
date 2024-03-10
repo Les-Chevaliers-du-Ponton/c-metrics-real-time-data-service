@@ -5,7 +5,6 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from typing import Dict, Tuple
 import hashlib
 import hmac
 import logging
@@ -13,9 +12,25 @@ import time
 from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
+from typing import Dict, Tuple
 
+from cryptofeed.types import (
+    OrderBook,
+    Trade,
+    Ticker,
+    Funding,
+    OrderInfo,
+    OpenInterest,
+    Liquidation,
+)
 from yapic import json
 
+from cryptofeed.connection import (
+    AsyncConnection,
+    RestEndpoint,
+    Routes,
+    WebsocketEndpoint,
+)
 from cryptofeed.defines import (
     BID,
     ASK,
@@ -39,24 +54,9 @@ from cryptofeed.defines import (
     TRADES,
     UNFILLED,
 )
+from cryptofeed.exchanges.mixins.bitmex_rest import BitmexRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.connection import (
-    AsyncConnection,
-    RestEndpoint,
-    Routes,
-    WebsocketEndpoint,
-)
-from cryptofeed.exchanges.mixins.bitmex_rest import BitmexRestMixin
-from cryptofeed.types import (
-    OrderBook,
-    Trade,
-    Ticker,
-    Funding,
-    OrderInfo,
-    OpenInterest,
-    Liquidation,
-)
 
 LOG = logging.getLogger("feedhandler")
 

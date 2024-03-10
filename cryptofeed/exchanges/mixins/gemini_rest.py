@@ -6,9 +6,10 @@ associated with this software.
 """
 
 import asyncio
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
+from cryptofeed.types import OrderBook
 from yapic import json
 
 from cryptofeed.defines import (
@@ -32,8 +33,6 @@ from cryptofeed.defines import (
     TRADE_HISTORY,
 )
 from cryptofeed.exchange import RestExchange
-from cryptofeed.types import OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

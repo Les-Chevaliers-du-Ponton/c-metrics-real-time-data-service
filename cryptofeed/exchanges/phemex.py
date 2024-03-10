@@ -6,13 +6,13 @@ associated with this software.
 """
 
 import hmac
+import logging
 import time
 from collections import defaultdict
-from cryptofeed.symbols import Symbol
-import logging
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade, Candle, Balance
 from yapic import json
 
 from cryptofeed.connection import (
@@ -34,7 +34,7 @@ from cryptofeed.defines import (
     PERPETUAL,
 )
 from cryptofeed.feed import Feed
-from cryptofeed.types import OrderBook, Trade, Candle, Balance
+from cryptofeed.symbols import Symbol
 
 LOG = logging.getLogger("feedhandler")
 

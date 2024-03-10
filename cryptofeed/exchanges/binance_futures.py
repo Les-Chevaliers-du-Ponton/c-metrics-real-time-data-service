@@ -5,10 +5,11 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from decimal import Decimal
 import logging
+from decimal import Decimal
 from typing import Tuple, Dict
 
+from cryptofeed.types import Balance, OpenInterest, OrderInfo, Position
 from yapic import json
 
 from cryptofeed.connection import (
@@ -33,7 +34,6 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exchanges.binance import Binance
 from cryptofeed.exchanges.mixins.binance_rest import BinanceFuturesRestMixin
-from cryptofeed.types import Balance, OpenInterest, OrderInfo, Position
 
 LOG = logging.getLogger("feedhandler")
 

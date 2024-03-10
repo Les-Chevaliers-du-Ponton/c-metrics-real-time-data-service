@@ -5,25 +5,24 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
+import logging
 from collections import defaultdict
+from decimal import Decimal
 from typing import Dict, Tuple
+
+from cryptofeed.types import Trade, OrderBook
+from yapic import json
+
 from cryptofeed.connection import (
     AsyncConnection,
     RestEndpoint,
     Routes,
     WebsocketEndpoint,
 )
-import logging
-from decimal import Decimal
-
-from yapic import json
-
 from cryptofeed.defines import ASCENDEX, BID, ASK, BUY, L2_BOOK, SELL, TRADES
 from cryptofeed.exceptions import MissingSequenceNumber
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import Trade, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

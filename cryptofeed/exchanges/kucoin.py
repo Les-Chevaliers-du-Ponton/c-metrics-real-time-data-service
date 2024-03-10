@@ -5,16 +5,23 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from decimal import Decimal
-import logging
-import time
-from typing import Dict, Tuple
-import hmac
 import base64
 import hashlib
+import hmac
+import logging
+import time
+from decimal import Decimal
+from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade, Ticker, Candle
 from yapic import json
 
+from cryptofeed.connection import (
+    AsyncConnection,
+    RestEndpoint,
+    Routes,
+    WebsocketEndpoint,
+)
 from cryptofeed.defines import (
     ASK,
     BID,
@@ -27,16 +34,8 @@ from cryptofeed.defines import (
     TRADES,
 )
 from cryptofeed.feed import Feed
-from cryptofeed.util.time import timedelta_str_to_sec
 from cryptofeed.symbols import Symbol
-from cryptofeed.connection import (
-    AsyncConnection,
-    RestEndpoint,
-    Routes,
-    WebsocketEndpoint,
-)
-from cryptofeed.types import OrderBook, Trade, Ticker, Candle
-
+from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")
 

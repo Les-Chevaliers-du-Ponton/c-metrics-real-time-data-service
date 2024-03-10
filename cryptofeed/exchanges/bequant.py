@@ -7,13 +7,22 @@ associated with this software.
 
 import hashlib
 import hmac
+import logging
 import random
 import string
 from collections import defaultdict
-import logging
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import (
+    Trade,
+    Ticker,
+    Candle,
+    OrderBook,
+    OrderInfo,
+    Balance,
+    Transaction,
+)
 from yapic import json
 
 from cryptofeed.connection import (
@@ -46,20 +55,10 @@ from cryptofeed.defines import (
     TRANSACTIONS,
     MARKET,
 )
-from cryptofeed.feed import Feed
 from cryptofeed.exceptions import MissingSequenceNumber
-from cryptofeed.util.time import timedelta_str_to_sec
+from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import (
-    Trade,
-    Ticker,
-    Candle,
-    OrderBook,
-    OrderInfo,
-    Balance,
-    Transaction,
-)
-
+from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")
 

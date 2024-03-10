@@ -6,18 +6,19 @@ associated with this software.
 """
 
 import logging
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
-from collections import defaultdict
 
+from cryptofeed.types import Trade, Candle, OrderBook
 from yapic import json
+
 from cryptofeed.connection import (
     AsyncConnection,
     RestEndpoint,
     Routes,
     WebsocketEndpoint,
 )
-
 from cryptofeed.defines import (
     BUY,
     CALL,
@@ -35,8 +36,6 @@ from cryptofeed.defines import (
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
 from cryptofeed.util.time import timedelta_str_to_sec
-from cryptofeed.types import Trade, Candle, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

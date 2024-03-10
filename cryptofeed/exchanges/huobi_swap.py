@@ -6,13 +6,13 @@ associated with this software.
 """
 
 import asyncio
-from collections import defaultdict
-from cryptofeed.symbols import Symbol, str_to_symbol
 import logging
 import time
+from collections import defaultdict
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import Funding
 from yapic import json
 
 from cryptofeed.connection import (
@@ -23,8 +23,7 @@ from cryptofeed.connection import (
 )
 from cryptofeed.defines import HUOBI_SWAP, FUNDING, PERPETUAL
 from cryptofeed.exchanges.huobi_dm import HuobiDM
-from cryptofeed.types import Funding
-
+from cryptofeed.symbols import Symbol, str_to_symbol
 
 LOG = logging.getLogger("feedhandler")
 

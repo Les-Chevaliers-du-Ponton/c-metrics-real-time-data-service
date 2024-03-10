@@ -12,7 +12,6 @@ from cryptofeed.callback import BookCallback
 from cryptofeed.defines import BID, ASK, L2_BOOK
 from cryptofeed.exchanges import Bitmex
 
-
 counter = 0
 avg = 0
 START = time.time()

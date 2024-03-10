@@ -10,7 +10,6 @@ from urllib.request import urlopen
 import requests
 from yapic import json
 
-
 """
 Just random functions I used while developing the library.
 They may come in handy again . . .

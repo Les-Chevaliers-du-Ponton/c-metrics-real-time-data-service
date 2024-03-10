@@ -7,9 +7,8 @@ associated with this software.
 
 import os
 
-from setuptools import Extension, setup
 from Cython.Build import cythonize
-
+from setuptools import Extension, setup
 
 extra_compile_args = ["/O2" if os.name == "nt" else "-O3"]
 define_macros = []

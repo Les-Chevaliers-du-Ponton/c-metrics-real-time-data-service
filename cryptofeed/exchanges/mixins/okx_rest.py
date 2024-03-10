@@ -6,14 +6,14 @@ associated with this software.
 """
 
 import asyncio
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
+from cryptofeed.types import Candle
 from yapic import json
 
-from cryptofeed.exchange import RestExchange
-from cryptofeed.types import Candle
 from cryptofeed.defines import CANDLES
+from cryptofeed.exchange import RestExchange
 from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")

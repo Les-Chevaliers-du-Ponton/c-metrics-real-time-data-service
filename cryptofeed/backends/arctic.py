@@ -8,9 +8,9 @@ Book backends are intentionally left out here - Arctic cannot handle high throug
 data like book data. Arctic is best used for writing large datasets in batches.
 """
 
-import arctic
 import pandas as pd
 
+import arctic
 from cryptofeed.backends.backend import BackendCallback
 from cryptofeed.defines import (
     BALANCES,

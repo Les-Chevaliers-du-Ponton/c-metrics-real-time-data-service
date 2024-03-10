@@ -5,9 +5,9 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-import sys
 import glob
 import os
+import sys
 
 
 def on(exchange_filter):

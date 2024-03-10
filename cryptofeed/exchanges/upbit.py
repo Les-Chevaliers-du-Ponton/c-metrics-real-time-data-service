@@ -6,20 +6,19 @@ associated with this software.
 """
 
 import logging
+import uuid
 from decimal import Decimal
 from typing import Dict, Tuple
-import uuid
 
+from cryptofeed.types import OrderBook, Trade
 from yapic import json
 
 from cryptofeed.connection import AsyncConnection
+from cryptofeed.connection import WebsocketEndpoint, RestEndpoint, Routes
 from cryptofeed.defines import BUY, L2_BOOK, SELL, TRADES, UPBIT
+from cryptofeed.exchanges.mixins.upbit_rest import UpbitRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.upbit_rest import UpbitRestMixin
-from cryptofeed.connection import WebsocketEndpoint, RestEndpoint, Routes
-from cryptofeed.types import OrderBook, Trade
-
 
 LOG = logging.getLogger("feedhandler")
 

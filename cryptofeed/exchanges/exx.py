@@ -5,11 +5,11 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from cryptofeed.symbols import Symbol
 import logging
 from decimal import Decimal
 from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade
 from yapic import json
 
 from cryptofeed.connection import (
@@ -22,8 +22,7 @@ from cryptofeed.defines import BID, ASK, BUY
 from cryptofeed.defines import EXX as EXX_id
 from cryptofeed.defines import L2_BOOK, SELL, TRADES
 from cryptofeed.feed import Feed
-from cryptofeed.types import OrderBook, Trade
-
+from cryptofeed.symbols import Symbol
 
 LOG = logging.getLogger("feedhandler")
 

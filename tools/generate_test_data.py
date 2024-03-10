@@ -11,9 +11,7 @@ import random
 
 import uvloop
 
-from cryptofeed.feedhandler import FeedHandler
-from cryptofeed.exchanges import EXCHANGE_MAP
-from cryptofeed.raw_data_collection import AsyncFileCallback
+from check_raw_dump import main as check_dump
 from cryptofeed.defines import (
     BINANCE,
     BINANCE_FUTURES,
@@ -26,7 +24,9 @@ from cryptofeed.defines import (
     CANDLES,
     EXX,
 )
-from check_raw_dump import main as check_dump
+from cryptofeed.exchanges import EXCHANGE_MAP
+from cryptofeed.feedhandler import FeedHandler
+from cryptofeed.raw_data_collection import AsyncFileCallback
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 

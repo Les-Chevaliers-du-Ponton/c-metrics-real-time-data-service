@@ -5,13 +5,12 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from cryptofeed.symbols import Symbol
-from cryptofeed.util.time import timedelta_str_to_sec
 import logging
-from typing import Dict, Tuple
 import zlib
 from decimal import Decimal
+from typing import Dict, Tuple
 
+from cryptofeed.types import OrderBook, Trade, Candle, Ticker
 from yapic import json
 
 from cryptofeed.connection import (
@@ -22,8 +21,8 @@ from cryptofeed.connection import (
 )
 from cryptofeed.defines import BUY, CANDLES, HUOBI, L2_BOOK, SELL, TRADES, TICKER
 from cryptofeed.feed import Feed
-from cryptofeed.types import OrderBook, Trade, Candle, Ticker
-
+from cryptofeed.symbols import Symbol
+from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")
 

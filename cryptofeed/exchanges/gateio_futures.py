@@ -6,10 +6,21 @@ associated with this software.
 """
 
 import logging
+import time
 from collections import defaultdict
 from decimal import Decimal
+from typing import Dict, Tuple
+
+from cryptofeed.types import (
+    OrderBook,
+    Trade,
+    Ticker,
+    Candle,
+    Index,
+    OpenInterest,
+    Funding,
+)
 from yapic import json
-import time
 
 from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 from cryptofeed.defines import (
@@ -27,19 +38,8 @@ from cryptofeed.defines import (
     INDEX,
     FUNDING,
 )
-
 from cryptofeed.exchanges.gateio import Gateio
-from typing import Dict, Tuple
 from cryptofeed.symbols import Symbol
-from cryptofeed.types import (
-    OrderBook,
-    Trade,
-    Ticker,
-    Candle,
-    Index,
-    OpenInterest,
-    Funding,
-)
 from cryptofeed.util.time import timedelta_str_to_sec
 
 LOG = logging.getLogger("feedhandler")

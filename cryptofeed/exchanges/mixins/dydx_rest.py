@@ -5,15 +5,14 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
+from cryptofeed.types import OrderBook
 from yapic import json
 
-from cryptofeed.exchange import RestExchange
 from cryptofeed.defines import BUY, SELL, TRADES, L2_BOOK
-from cryptofeed.types import OrderBook
-
+from cryptofeed.exchange import RestExchange
 
 LOG = logging.getLogger("feedhandler")
 

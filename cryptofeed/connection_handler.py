@@ -8,18 +8,17 @@ associated with this software.
 import asyncio
 import logging
 import random
-from socket import error as socket_error
 import time
-from typing import Awaitable
 import zlib
+from socket import error as socket_error
+from typing import Awaitable
 
 from websockets import ConnectionClosed
 from websockets.exceptions import InvalidStatusCode
 
 from cryptofeed.connection import AsyncConnection
-from cryptofeed.exceptions import ExhaustedRetries
 from cryptofeed.defines import HUOBI, HUOBI_DM, HUOBI_SWAP, OKCOIN, OKX
-
+from cryptofeed.exceptions import ExhaustedRetries
 
 LOG = logging.getLogger("feedhandler")
 

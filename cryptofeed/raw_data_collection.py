@@ -5,14 +5,14 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
+import ast
 import asyncio
 import atexit
-from collections import defaultdict
 import functools
-import ast
+from collections import defaultdict
 
-from yapic import json
 from aiofile import AIOFile
+from yapic import json
 
 from cryptofeed.defines import HUOBI, UPBIT, OKX, OKCOIN
 from cryptofeed.exchanges import EXCHANGE_MAP

@@ -6,12 +6,13 @@ associated with this software.
 """
 
 import asyncio
-from decimal import Decimal
 import logging
-from typing import Dict, Tuple
 from collections import defaultdict
+from decimal import Decimal
 from time import time
+from typing import Dict, Tuple
 
+from cryptofeed.types import Trade, OrderBook
 from yapic import json
 
 from cryptofeed.connection import (
@@ -21,11 +22,9 @@ from cryptofeed.connection import (
     WebsocketEndpoint,
 )
 from cryptofeed.defines import BID, BUY, ASK, INDEPENDENT_RESERVE, L3_BOOK, SELL, TRADES
+from cryptofeed.exceptions import MissingSequenceNumber
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exceptions import MissingSequenceNumber
-from cryptofeed.types import Trade, OrderBook
-
 
 LOG = logging.getLogger("feedhandler")
 

@@ -5,14 +5,13 @@ Please see the LICENSE file for the terms and conditions
 associated with this software.
 """
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from typing import Dict, Tuple
 
-
-from cryptofeed.exchanges import OKX
 from cryptofeed.connection import RestEndpoint, Routes, WebsocketEndpoint
 from cryptofeed.defines import L2_BOOK, OKCOIN, TICKER, TRADES, SPOT, CANDLES
+from cryptofeed.exchanges import OKX
 from cryptofeed.symbols import Symbol
 
 LOG = logging.getLogger("feedhandler")

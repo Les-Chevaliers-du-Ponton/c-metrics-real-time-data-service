@@ -6,14 +6,24 @@ associated with this software.
 """
 
 import logging
+import time
 from asyncio import create_task, sleep
 from collections import defaultdict
 from decimal import Decimal
-import requests
-import time
 from typing import Dict, Union, Tuple
 from urllib.parse import urlencode
 
+import requests
+from cryptofeed.types import (
+    Trade,
+    Ticker,
+    Candle,
+    Liquidation,
+    Funding,
+    OrderBook,
+    OrderInfo,
+    Balance,
+)
 from yapic import json
 
 from cryptofeed.connection import (
@@ -47,19 +57,9 @@ from cryptofeed.defines import (
     FILLED,
     UNFILLED,
 )
+from cryptofeed.exchanges.mixins.binance_rest import BinanceRestMixin
 from cryptofeed.feed import Feed
 from cryptofeed.symbols import Symbol
-from cryptofeed.exchanges.mixins.binance_rest import BinanceRestMixin
-from cryptofeed.types import (
-    Trade,
-    Ticker,
-    Candle,
-    Liquidation,
-    Funding,
-    OrderBook,
-    OrderInfo,
-    Balance,
-)
 
 REFRESH_SNAPSHOT_MIN_INTERVAL_SECONDS = 60
 
