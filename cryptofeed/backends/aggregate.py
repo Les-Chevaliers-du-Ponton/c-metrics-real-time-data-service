@@ -1,9 +1,10 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 import time
 from decimal import Decimal
 
@@ -57,23 +58,29 @@ class OHLCV(AggregateCallback):
 
     def _agg(self, symbol, amount, price):
         if symbol not in self.data:
-            self.data[symbol] = {'open': price, 'high': price, 'low': price,
-                                 'close': price, 'volume': Decimal(0), 'vwap': Decimal(0)}
+            self.data[symbol] = {
+                "open": price,
+                "high": price,
+                "low": price,
+                "close": price,
+                "volume": Decimal(0),
+                "vwap": Decimal(0),
+            }
 
-        self.data[symbol]['close'] = price
-        self.data[symbol]['volume'] += amount
-        if price > self.data[symbol]['high']:
-            self.data[symbol]['high'] = price
-        if price < self.data[symbol]['low']:
-            self.data[symbol]['low'] = price
-        self.data[symbol]['vwap'] += price * amount
+        self.data[symbol]["close"] = price
+        self.data[symbol]["volume"] += amount
+        if price > self.data[symbol]["high"]:
+            self.data[symbol]["high"] = price
+        if price < self.data[symbol]["low"]:
+            self.data[symbol]["low"] = price
+        self.data[symbol]["vwap"] += price * amount
 
     async def __call__(self, trade, receipt_timestamp: float):
         now = time.time()
         if now - self.last_update > self.window:
             self.last_update = now
             for p in self.data:
-                self.data[p]['vwap'] /= self.data[p]['volume']
+                self.data[p]["vwap"] /= self.data[p]["volume"]
 
             await self.handler(self.data)
             self.data = {}
@@ -107,7 +114,7 @@ class RenkoFixed(AggregateCallback):
             self.brick_open = price
             self.brick_high = price
             self.brick_low = price
-            self.data[symbol] = {'brick_open': price, 'brick_close': price}
+            self.data[symbol] = {"brick_open": price, "brick_close": price}
 
         self.brick_low = np.min([self.brick_low, price])
         self.brick_high = np.max([self.brick_high, price])
@@ -130,9 +137,9 @@ class RenkoFixed(AggregateCallback):
             same = self.new_direction == self.prev_direction
             if same:
                 self.brick_open = self.brick_close
-            self.data[symbol]['brick_open'] = self.brick_open
+            self.data[symbol]["brick_open"] = self.brick_open
             self.brick_close = price
-            self.data[symbol]['brick_close'] = self.brick_close
+            self.data[symbol]["brick_close"] = self.brick_close
             self.brick_high = self.brick_low = self.brick_close
             self.prev_direction = self.new_direction
 

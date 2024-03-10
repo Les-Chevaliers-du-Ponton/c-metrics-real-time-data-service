@@ -1,37 +1,73 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 from decimal import Decimal
 import logging
 from typing import Tuple, Dict
 
 from yapic import json
 
-from cryptofeed.connection import AsyncConnection, HTTPPoll, RestEndpoint, Routes, WebsocketEndpoint
-from cryptofeed.defines import BALANCES, BINANCE_FUTURES, BUY, FUNDING, LIMIT, LIQUIDATIONS, MARKET, OPEN_INTEREST, ORDER_INFO, POSITIONS, SELL
+from cryptofeed.connection import (
+    AsyncConnection,
+    HTTPPoll,
+    RestEndpoint,
+    Routes,
+    WebsocketEndpoint,
+)
+from cryptofeed.defines import (
+    BALANCES,
+    BINANCE_FUTURES,
+    BUY,
+    FUNDING,
+    LIMIT,
+    LIQUIDATIONS,
+    MARKET,
+    OPEN_INTEREST,
+    ORDER_INFO,
+    POSITIONS,
+    SELL,
+)
 from cryptofeed.exchanges.binance import Binance
 from cryptofeed.exchanges.mixins.binance_rest import BinanceFuturesRestMixin
 from cryptofeed.types import Balance, OpenInterest, OrderInfo, Position
 
-LOG = logging.getLogger('feedhandler')
+LOG = logging.getLogger("feedhandler")
 
 
 class BinanceFutures(Binance, BinanceFuturesRestMixin):
     id = BINANCE_FUTURES
-    websocket_endpoints = [WebsocketEndpoint('wss://fstream.binance.com', sandbox='wss://stream.binancefuture.com', options={'compression': None})]
-    rest_endpoints = [RestEndpoint('https://fapi.binance.com', sandbox='https://testnet.binancefuture.com', routes=Routes('/fapi/v1/exchangeInfo', l2book='/fapi/v1/depth?symbol={}&limit={}', authentication='/fapi/v1/listenKey', open_interest='/fapi/v1/openInterest?symbol={}'))]
+    websocket_endpoints = [
+        WebsocketEndpoint(
+            "wss://fstream.binance.com",
+            sandbox="wss://stream.binancefuture.com",
+            options={"compression": None},
+        )
+    ]
+    rest_endpoints = [
+        RestEndpoint(
+            "https://fapi.binance.com",
+            sandbox="https://testnet.binancefuture.com",
+            routes=Routes(
+                "/fapi/v1/exchangeInfo",
+                l2book="/fapi/v1/depth?symbol={}&limit={}",
+                authentication="/fapi/v1/listenKey",
+                open_interest="/fapi/v1/openInterest?symbol={}",
+            ),
+        )
+    ]
 
     valid_depths = [5, 10, 20, 50, 100, 500, 1000]
-    valid_depth_intervals = {'100ms', '250ms', '500ms'}
+    valid_depth_intervals = {"100ms", "250ms", "500ms"}
     websocket_channels = {
         **Binance.websocket_channels,
-        FUNDING: 'markPrice',
-        OPEN_INTEREST: 'open_interest',
-        LIQUIDATIONS: 'forceOrder',
-        POSITIONS: POSITIONS
+        FUNDING: "markPrice",
+        OPEN_INTEREST: "open_interest",
+        LIQUIDATIONS: "forceOrder",
+        POSITIONS: POSITIONS,
     }
 
     @classmethod
@@ -56,19 +92,37 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
     def _connect_rest(self):
         ret = []
         for chan in set(self.subscription):
-            if chan == 'open_interest':
-                addrs = [self.rest_endpoints[0].route('open_interest', sandbox=self.sandbox).format(pair) for pair in self.subscription[chan]]
-                ret.append((HTTPPoll(addrs, self.id, delay=60.0, sleep=self.open_interest_interval, proxy=self.http_proxy), self.subscribe, self.message_handler, self.authenticate))
+            if chan == "open_interest":
+                addrs = [
+                    self.rest_endpoints[0]
+                    .route("open_interest", sandbox=self.sandbox)
+                    .format(pair)
+                    for pair in self.subscription[chan]
+                ]
+                ret.append(
+                    (
+                        HTTPPoll(
+                            addrs,
+                            self.id,
+                            delay=60.0,
+                            sleep=self.open_interest_interval,
+                            proxy=self.http_proxy,
+                        ),
+                        self.subscribe,
+                        self.message_handler,
+                        self.authenticate,
+                    )
+                )
         return ret
 
     def _check_update_id(self, pair: str, msg: dict) -> bool:
-        if self._l2_book[pair].delta is None and msg['u'] < self.last_update_id[pair]:
+        if self._l2_book[pair].delta is None and msg["u"] < self.last_update_id[pair]:
             return True
-        elif msg['U'] <= self.last_update_id[pair] <= msg['u']:
-            self.last_update_id[pair] = msg['u']
+        elif msg["U"] <= self.last_update_id[pair] <= msg["u"]:
+            self.last_update_id[pair] = msg["u"]
             return False
-        elif self.last_update_id[pair] == msg['pu']:
-            self.last_update_id[pair] = msg['u']
+        elif self.last_update_id[pair] == msg["pu"]:
+            self.last_update_id[pair] = msg["u"]
             return False
         else:
             self._reset()
@@ -83,15 +137,15 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
             "time": 1589437530011   // Transaction time
         }
         """
-        pair = msg['symbol']
-        oi = msg['openInterest']
+        pair = msg["symbol"]
+        oi = msg["openInterest"]
         if oi != self._open_interest_cache.get(pair, None):
             o = OpenInterest(
                 self.id,
                 self.exchange_symbol_to_std_symbol(pair),
                 Decimal(oi),
-                self.timestamp_normalize(msg['time']),
-                raw=msg
+                self.timestamp_normalize(msg["time"]),
+                raw=msg,
             )
             await self.callback(OPEN_INTEREST, o, timestamp)
             self._open_interest_cache[pair] = oi
@@ -154,24 +208,20 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
             }
         }
         """
-        for balance in msg['a']['B']:
-            b = Balance(
-                self.id,
-                balance['a'],
-                Decimal(balance['wb']),
-                None,
-                raw=msg)
+        for balance in msg["a"]["B"]:
+            b = Balance(self.id, balance["a"], Decimal(balance["wb"]), None, raw=msg)
             await self.callback(BALANCES, b, timestamp)
-        for position in msg['a']['P']:
+        for position in msg["a"]["P"]:
             p = Position(
                 self.id,
-                self.exchange_symbol_to_std_symbol(position['s']),
-                Decimal(position['pa']),
-                Decimal(position['ep']),
-                position['ps'].lower(),
-                Decimal(position['up']),
-                self.timestamp_normalize(msg['E']),
-                raw=msg)
+                self.exchange_symbol_to_std_symbol(position["s"]),
+                Decimal(position["pa"]),
+                Decimal(position["ep"]),
+                position["ps"].lower(),
+                Decimal(position["up"]),
+                self.timestamp_normalize(msg["E"]),
+                raw=msg,
+            )
             await self.callback(POSITIONS, p, timestamp)
 
     async def _order_update(self, msg: dict, timestamp: float):
@@ -220,16 +270,24 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
         """
         oi = OrderInfo(
             self.id,
-            self.exchange_symbol_to_std_symbol(msg['o']['s']),
-            str(msg['o']['i']),
-            BUY if msg['o']['S'].lower() == 'buy' else SELL,
-            msg['o']['x'],
-            LIMIT if msg['o']['o'].lower() == 'limit' else MARKET if msg['o']['o'].lower() == 'market' else None,
-            Decimal(msg['o']['ap']) if not Decimal.is_zero(Decimal(msg['o']['ap'])) else None,
-            Decimal(msg['o']['q']),
-            Decimal(msg['o']['q']) - Decimal(msg['o']['z']),
-            self.timestamp_normalize(msg['E']),
-            raw=msg
+            self.exchange_symbol_to_std_symbol(msg["o"]["s"]),
+            str(msg["o"]["i"]),
+            BUY if msg["o"]["S"].lower() == "buy" else SELL,
+            msg["o"]["x"],
+            (
+                LIMIT
+                if msg["o"]["o"].lower() == "limit"
+                else MARKET if msg["o"]["o"].lower() == "market" else None
+            ),
+            (
+                Decimal(msg["o"]["ap"])
+                if not Decimal.is_zero(Decimal(msg["o"]["ap"]))
+                else None
+            ),
+            Decimal(msg["o"]["q"]),
+            Decimal(msg["o"]["q"]) - Decimal(msg["o"]["z"]),
+            self.timestamp_normalize(msg["E"]),
+            raw=msg,
         )
         await self.callback(ORDER_INFO, oi, timestamp)
 
@@ -237,37 +295,37 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
         msg = json.loads(msg, parse_float=Decimal)
 
         # Handle REST endpoint messages first
-        if 'openInterest' in msg:
+        if "openInterest" in msg:
             return await self._open_interest(msg, timestamp)
 
         # Handle account updates from User Data Stream
         if self.requires_authentication:
-            msg_type = msg.get('e')
-            if msg_type == 'ACCOUNT_UPDATE':
+            msg_type = msg.get("e")
+            if msg_type == "ACCOUNT_UPDATE":
                 await self._account_update(msg, timestamp)
-            elif msg_type == 'ORDER_TRADE_UPDATE':
+            elif msg_type == "ORDER_TRADE_UPDATE":
                 await self._order_update(msg, timestamp)
             return
 
         # Combined stream events are wrapped as follows: {"stream":"<streamName>","data":<rawPayload>}
         # streamName is of format <symbol>@<channel>
-        pair, _ = msg['stream'].split('@', 1)
-        msg = msg['data']
+        pair, _ = msg["stream"].split("@", 1)
+        msg = msg["data"]
 
         pair = pair.upper()
 
-        msg_type = msg.get('e')
-        if msg_type == 'bookTicker':
+        msg_type = msg.get("e")
+        if msg_type == "bookTicker":
             await self._ticker(msg, timestamp)
-        elif msg_type == 'depthUpdate':
+        elif msg_type == "depthUpdate":
             await self._book(msg, pair, timestamp)
-        elif msg_type == 'aggTrade':
+        elif msg_type == "aggTrade":
             await self._trade(msg, timestamp)
-        elif msg_type == 'forceOrder':
+        elif msg_type == "forceOrder":
             await self._liquidations(msg, timestamp)
-        elif msg_type == 'markPriceUpdate':
+        elif msg_type == "markPriceUpdate":
             await self._funding(msg, timestamp)
-        elif msg['e'] == 'kline':
+        elif msg["e"] == "kline":
             await self._candle(msg, timestamp)
         else:
             LOG.warning("%s: Unexpected message received: %s", self.id, msg)

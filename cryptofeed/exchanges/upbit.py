@@ -1,9 +1,10 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 import logging
 from decimal import Decimal
 from typing import Dict, Tuple
@@ -20,13 +21,15 @@ from cryptofeed.connection import WebsocketEndpoint, RestEndpoint, Routes
 from cryptofeed.types import OrderBook, Trade
 
 
-LOG = logging.getLogger('feedhandler')
+LOG = logging.getLogger("feedhandler")
 
 
 class Upbit(Feed, UpbitRestMixin):
     id = UPBIT
-    websocket_endpoints = [WebsocketEndpoint('wss://api.upbit.com/websocket/v1')]
-    rest_endpoints = [RestEndpoint('https://api.upbit.com', routes=Routes('/v1/market/all'))]
+    websocket_endpoints = [WebsocketEndpoint("wss://api.upbit.com/websocket/v1")]
+    rest_endpoints = [
+        RestEndpoint("https://api.upbit.com", routes=Routes("/v1/market/all"))
+    ]
     websocket_channels = {
         L2_BOOK: L2_BOOK,
         TRADES: TRADES,
@@ -40,12 +43,12 @@ class Upbit(Feed, UpbitRestMixin):
     @classmethod
     def _parse_symbol_data(cls, data: dict) -> Tuple[Dict, Dict]:
         ret = {}
-        info = {'instrument_type': {}}
+        info = {"instrument_type": {}}
         for entry in data:
-            quote, base = entry['market'].split("-")
+            quote, base = entry["market"].split("-")
             s = Symbol(base, quote)
-            ret[s.normalized] = entry['market']
-            info['instrument_type'][s.normalized] = s.type
+            ret[s.normalized] = entry["market"]
+            info["instrument_type"][s.normalized] = s.type
         return ret, info
 
     async def _trade(self, msg: dict, timestamp: float):
@@ -70,17 +73,17 @@ class Upbit(Feed, UpbitRestMixin):
         }
         """
 
-        price = Decimal(msg['tp'])
-        amount = Decimal(msg['tv'])
+        price = Decimal(msg["tp"])
+        amount = Decimal(msg["tv"])
         t = Trade(
             self.id,
-            self.exchange_symbol_to_std_symbol(msg['cd']),
-            BUY if msg['ab'] == 'BID' else SELL,
+            self.exchange_symbol_to_std_symbol(msg["cd"]),
+            BUY if msg["ab"] == "BID" else SELL,
             amount,
             price,
-            self.timestamp_normalize(msg['ttms']),
-            id=str(msg['sid']),
-            raw=msg
+            self.timestamp_normalize(msg["ttms"]),
+            id=str(msg["sid"]),
+            raw=msg,
         )
         await self.callback(TRADES, t, timestamp)
 
@@ -114,23 +117,37 @@ class Upbit(Feed, UpbitRestMixin):
             'tms': 1584263923870,  // Timestamp
         }
         """
-        pair = self.exchange_symbol_to_std_symbol(msg['cd'])
-        orderbook_timestamp = self.timestamp_normalize(msg['tms'])
+        pair = self.exchange_symbol_to_std_symbol(msg["cd"])
+        orderbook_timestamp = self.timestamp_normalize(msg["tms"])
         if pair not in self._l2_book:
             self._l2_book[pair] = OrderBook(self.id, pair, max_depth=self.max_depth)
 
-        self._l2_book[pair].book.bids = {Decimal(unit['bp']): Decimal(unit['bs']) for unit in msg['obu'] if unit['bp'] > 0}
-        self._l2_book[pair].book.asks = {Decimal(unit['ap']): Decimal(unit['as']) for unit in msg['obu'] if unit['ap'] > 0}
+        self._l2_book[pair].book.bids = {
+            Decimal(unit["bp"]): Decimal(unit["bs"])
+            for unit in msg["obu"]
+            if unit["bp"] > 0
+        }
+        self._l2_book[pair].book.asks = {
+            Decimal(unit["ap"]): Decimal(unit["as"])
+            for unit in msg["obu"]
+            if unit["ap"] > 0
+        }
 
-        await self.book_callback(L2_BOOK, self._l2_book[pair], timestamp, timestamp=orderbook_timestamp, raw=msg)
+        await self.book_callback(
+            L2_BOOK,
+            self._l2_book[pair],
+            timestamp,
+            timestamp=orderbook_timestamp,
+            raw=msg,
+        )
 
     async def message_handler(self, msg: str, conn, timestamp: float):
 
         msg = json.loads(msg, parse_float=Decimal)
 
-        if msg['ty'] == "trade":
+        if msg["ty"] == "trade":
             await self._trade(msg, timestamp)
-        elif msg['ty'] == "orderbook":
+        elif msg["ty"] == "orderbook":
             await self._book(msg, timestamp)
         else:
             LOG.warning("%s: Unhandled message %s", self.id, msg)
@@ -165,8 +182,10 @@ class Upbit(Feed, UpbitRestMixin):
         for chan in self.subscription:
             codes = list(self.subscription[chan])
             if chan == L2_BOOK:
-                chans.append({"type": "orderbook", "codes": codes, 'isOnlyRealtime': True})
+                chans.append(
+                    {"type": "orderbook", "codes": codes, "isOnlyRealtime": True}
+                )
             if chan == TRADES:
-                chans.append({"type": "trade", "codes": codes, 'isOnlyRealtime': True})
+                chans.append({"type": "trade", "codes": codes, "isOnlyRealtime": True})
 
         await conn.write(json.dumps(chans))

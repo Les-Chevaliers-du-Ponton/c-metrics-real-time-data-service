@@ -1,9 +1,10 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 import asyncio
 from decimal import Decimal
 import logging
@@ -15,15 +16,17 @@ from cryptofeed.exchange import RestExchange
 from cryptofeed.types import OrderBook
 
 
-LOG = logging.getLogger('feedhandler')
+LOG = logging.getLogger("feedhandler")
 
 
 class DeribitRestMixin(RestExchange):
     api = "https://www.deribit.com/api/v2/public/"
-    sandbox_api = 'https://test.deribit.com/api/v2/public/'
+    sandbox_api = "https://test.deribit.com/api/v2/public/"
     rest_channels = (TRADES, L2_BOOK)
 
-    async def trades(self, symbol: str, start=None, end=None, retry_count=1, retry_delay=10):
+    async def trades(
+        self, symbol: str, start=None, end=None, retry_count=1, retry_delay=10
+    ):
         symbol = self.std_symbol_to_exchange_symbol(symbol)
         start, end = self._interval_normalize(start, end)
         if start:
@@ -35,12 +38,18 @@ class DeribitRestMixin(RestExchange):
             if start and end:
                 endpoint = f"{self.api}get_last_trades_by_instrument_and_time?&start_timestamp={start}&end_timestamp={end}&instrument_name={symbol}&include_old=true&count=1000"
 
-            data = await self.http_conn.read(endpoint, retry_count=retry_count, retry_delay=retry_delay)
+            data = await self.http_conn.read(
+                endpoint, retry_count=retry_count, retry_delay=retry_delay
+            )
             data = json.loads(data, parse_float=Decimal)["result"]["trades"]
 
             if data:
                 if data[-1]["timestamp"] == start:
-                    LOG.warning("%s: number of trades exceeds exchange time window, some data will not be retrieved for time %d", self.id, start)
+                    LOG.warning(
+                        "%s: number of trades exceeds exchange time window, some data will not be retrieved for time %d",
+                        self.id,
+                        start,
+                    )
                     start += 1
                 else:
                     start = data[-1]["timestamp"]
@@ -56,13 +65,13 @@ class DeribitRestMixin(RestExchange):
     def _trade_normalization(self, trade: list) -> dict:
 
         ret = {
-            'timestamp': self.timestamp_normalize(trade["timestamp"]),
-            'symbol': self.exchange_symbol_to_std_symbol(trade["instrument_name"]),
-            'id': int(trade["trade_id"]),
-            'feed': self.id,
-            'side': BUY if trade["direction"] == 'buy' else SELL,
-            'amount': Decimal(trade["amount"]),
-            'price': Decimal(trade["price"]),
+            "timestamp": self.timestamp_normalize(trade["timestamp"]),
+            "symbol": self.exchange_symbol_to_std_symbol(trade["instrument_name"]),
+            "id": int(trade["trade_id"]),
+            "feed": self.id,
+            "side": BUY if trade["direction"] == "buy" else SELL,
+            "amount": Decimal(trade["amount"]),
+            "price": Decimal(trade["price"]),
         }
         return ret
 
@@ -70,9 +79,13 @@ class DeribitRestMixin(RestExchange):
         ret = OrderBook(self.id, symbol)
         symbol = self.std_symbol_to_exchange_symbol(symbol)
 
-        data = await self.http_conn.read(f"{self.api}get_order_book?depth=10000&instrument_name={symbol}", retry_count=retry_count, retry_delay=retry_delay)
+        data = await self.http_conn.read(
+            f"{self.api}get_order_book?depth=10000&instrument_name={symbol}",
+            retry_count=retry_count,
+            retry_delay=retry_delay,
+        )
         data = json.loads(data, parse_float=Decimal)
-        for side in ('bids', 'asks'):
+        for side in ("bids", "asks"):
             for entry_bid in data["result"][side]:
                 price, amount = entry_bid
                 ret.book[side][price] = amount

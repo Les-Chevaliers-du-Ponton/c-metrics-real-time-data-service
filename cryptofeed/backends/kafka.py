@@ -1,21 +1,30 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 from collections import defaultdict
 import asyncio
 import logging
 from typing import Optional, ByteString
 
 from aiokafka import AIOKafkaProducer
-from aiokafka.errors import RequestTimedOutError, KafkaConnectionError, NodeNotReadyError
+from aiokafka.errors import (
+    RequestTimedOutError,
+    KafkaConnectionError,
+    NodeNotReadyError,
+)
 from yapic import json
 
-from cryptofeed.backends.backend import BackendBookCallback, BackendCallback, BackendQueue
+from cryptofeed.backends.backend import (
+    BackendBookCallback,
+    BackendCallback,
+    BackendQueue,
+)
 
-LOG = logging.getLogger('feedhandler')
+LOG = logging.getLogger("feedhandler")
 
 
 class KafkaCallback(BackendQueue):
@@ -52,28 +61,36 @@ class KafkaCallback(BackendQueue):
         elif isinstance(to_bytes, str):
             return to_bytes.encode()
         else:
-            raise TypeError(f'{type(to_bytes)} is not a valid Serialization type')
+            raise TypeError(f"{type(to_bytes)} is not a valid Serialization type")
 
     async def _connect(self):
         if not self.producer:
             loop = asyncio.get_event_loop()
             try:
-                config_keys = ', '.join([k for k in self.producer_config.keys()])
-                LOG.info(f'{self.__class__.__name__}: Configuring AIOKafka with the following parameters: {config_keys}')
+                config_keys = ", ".join([k for k in self.producer_config.keys()])
+                LOG.info(
+                    f"{self.__class__.__name__}: Configuring AIOKafka with the following parameters: {config_keys}"
+                )
                 self.producer = AIOKafkaProducer(**self.producer_config, loop=loop)
             # Quit if invalid config option passed to AIOKafka
             except (TypeError, ValueError) as e:
-                LOG.error(f'{self.__class__.__name__}: Invalid AIOKafka configuration: {e.args}{chr(10)}See https://aiokafka.readthedocs.io/en/stable/api.html#aiokafka.AIOKafkaProducer for list of configuration options')
+                LOG.error(
+                    f"{self.__class__.__name__}: Invalid AIOKafka configuration: {e.args}{chr(10)}See https://aiokafka.readthedocs.io/en/stable/api.html#aiokafka.AIOKafkaProducer for list of configuration options"
+                )
                 raise SystemExit
             else:
                 while not self.running:
                     try:
                         await self.producer.start()
                     except KafkaConnectionError:
-                        LOG.error(f'{self.__class__.__name__}: Unable to bootstrap from host(s)')
+                        LOG.error(
+                            f"{self.__class__.__name__}: Unable to bootstrap from host(s)"
+                        )
                         await asyncio.sleep(10)
                     else:
-                        LOG.info(f'{self.__class__.__name__}: "{self.producer.client._client_id}" connected to cluster containing {len(self.producer.client.cluster.brokers())} broker(s)')
+                        LOG.info(
+                            f'{self.__class__.__name__}: "{self.producer.client._client_id}" connected to cluster containing {len(self.producer.client.cluster.brokers())} broker(s)'
+                        )
                         self.running = True
 
     def topic(self, data: dict) -> str:
@@ -92,32 +109,48 @@ class KafkaCallback(BackendQueue):
                 for index in range(len(updates)):
                     topic = self.topic(updates[index])
                     # Check for user-provided serializers, otherwise use default
-                    value = updates[index] if self.producer_config.get('value_serializer') else self._default_serializer(updates[index])
-                    key = self.key if self.producer_config.get('key_serializer') else self._default_serializer(self.key)
+                    value = (
+                        updates[index]
+                        if self.producer_config.get("value_serializer")
+                        else self._default_serializer(updates[index])
+                    )
+                    key = (
+                        self.key
+                        if self.producer_config.get("key_serializer")
+                        else self._default_serializer(self.key)
+                    )
                     partition = self.partition(updates[index])
                     try:
-                        send_future = await self.producer.send(topic, value, key, partition)
+                        send_future = await self.producer.send(
+                            topic, value, key, partition
+                        )
                         await send_future
                     except RequestTimedOutError:
-                        LOG.error(f'{self.__class__.__name__}: No response received from server within {self.producer._request_timeout_ms} ms. Messages may not have been delivered')
+                        LOG.error(
+                            f"{self.__class__.__name__}: No response received from server within {self.producer._request_timeout_ms} ms. Messages may not have been delivered"
+                        )
                     except NodeNotReadyError:
-                        LOG.error(f'{self.__class__.__name__}: Node not ready')
+                        LOG.error(f"{self.__class__.__name__}: Node not ready")
                     except Exception as e:
-                        LOG.info(f'{self.__class__.__name__}: Encountered an error:{chr(10)}{e}')
-        LOG.info(f"{self.__class__.__name__}: sending last messages and closing connection '{self.producer.client._client_id}'")
+                        LOG.info(
+                            f"{self.__class__.__name__}: Encountered an error:{chr(10)}{e}"
+                        )
+        LOG.info(
+            f"{self.__class__.__name__}: sending last messages and closing connection '{self.producer.client._client_id}'"
+        )
         await self.producer.stop()
 
 
 class TradeKafka(KafkaCallback, BackendCallback):
-    default_key = 'trades'
+    default_key = "trades"
 
 
 class FundingKafka(KafkaCallback, BackendCallback):
-    default_key = 'funding'
+    default_key = "funding"
 
 
 class BookKafka(KafkaCallback, BackendBookCallback):
-    default_key = 'book'
+    default_key = "book"
 
     def __init__(self, *args, snapshots_only=False, snapshot_interval=1000, **kwargs):
         self.snapshots_only = snapshots_only
@@ -127,32 +160,32 @@ class BookKafka(KafkaCallback, BackendBookCallback):
 
 
 class TickerKafka(KafkaCallback, BackendCallback):
-    default_key = 'ticker'
+    default_key = "ticker"
 
 
 class OpenInterestKafka(KafkaCallback, BackendCallback):
-    default_key = 'open_interest'
+    default_key = "open_interest"
 
 
 class LiquidationsKafka(KafkaCallback, BackendCallback):
-    default_key = 'liquidations'
+    default_key = "liquidations"
 
 
 class CandlesKafka(KafkaCallback, BackendCallback):
-    default_key = 'candles'
+    default_key = "candles"
 
 
 class OrderInfoKafka(KafkaCallback, BackendCallback):
-    default_key = 'order_info'
+    default_key = "order_info"
 
 
 class TransactionsKafka(KafkaCallback, BackendCallback):
-    default_key = 'transactions'
+    default_key = "transactions"
 
 
 class BalancesKafka(KafkaCallback, BackendCallback):
-    default_key = 'balances'
+    default_key = "balances"
 
 
 class FillsKafka(KafkaCallback, BackendCallback):
-    default_key = 'fills'
+    default_key = "fills"

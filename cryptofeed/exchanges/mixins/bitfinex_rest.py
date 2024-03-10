@@ -1,9 +1,10 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 import asyncio
 import hashlib
 import hmac
@@ -12,7 +13,25 @@ from decimal import Decimal
 
 from yapic import json
 
-from cryptofeed.defines import BID, ASK, L2_BOOK, L3_BOOK, BUY, SELL, TICKER, TRADES, MARKET, LIMIT, MARGIN_LIMIT, MARGIN_MARKET, CANCEL_ORDER, PLACE_ORDER, ORDERS, BALANCES, POSITIONS
+from cryptofeed.defines import (
+    BID,
+    ASK,
+    L2_BOOK,
+    L3_BOOK,
+    BUY,
+    SELL,
+    TICKER,
+    TRADES,
+    MARKET,
+    LIMIT,
+    MARGIN_LIMIT,
+    MARGIN_MARKET,
+    CANCEL_ORDER,
+    PLACE_ORDER,
+    ORDERS,
+    BALANCES,
+    POSITIONS,
+)
 from cryptofeed.exchange import RestExchange
 from cryptofeed.util.time import timedelta_str_to_sec
 from cryptofeed.types import OrderBook, Candle
@@ -20,17 +39,38 @@ from cryptofeed.types import OrderBook, Candle
 
 class BitfinexRestMixin(RestExchange):
     api = "https://api-pub.bitfinex.com/v2/"
-    auth_api = 'https://api.bitfinex.com'
+    auth_api = "https://api.bitfinex.com"
     rest_channels = (
-        TRADES, TICKER, L2_BOOK, L3_BOOK, CANCEL_ORDER, PLACE_ORDER, ORDERS, BALANCES, POSITIONS
+        TRADES,
+        TICKER,
+        L2_BOOK,
+        L3_BOOK,
+        CANCEL_ORDER,
+        PLACE_ORDER,
+        ORDERS,
+        BALANCES,
+        POSITIONS,
     )
     order_options = {
-        LIMIT: 'EXCHANGE LIMIT',
-        MARKET: 'EXCHANGE MARKET',
-        MARGIN_LIMIT: 'LIMIT',
-        MARGIN_MARKET: 'MARKET'
+        LIMIT: "EXCHANGE LIMIT",
+        MARKET: "EXCHANGE MARKET",
+        MARGIN_LIMIT: "LIMIT",
+        MARGIN_MARKET: "MARKET",
     }
-    candle_mappings = {'1m': '1m', '5m': '5m', '15m': '15m', '30m': '30m', '1h': '1h', '3h': '3h', '6h': '6h', '12h': '12h', '1d': '1D', '1w': '7D', '2w': '14D', '1M': '1M'}
+    candle_mappings = {
+        "1m": "1m",
+        "5m": "5m",
+        "15m": "15m",
+        "30m": "30m",
+        "1h": "1h",
+        "3h": "3h",
+        "6h": "6h",
+        "12h": "12h",
+        "1d": "1D",
+        "1w": "7D",
+        "2w": "14D",
+        "1M": "1M",
+    }
 
     def _nonce(self):
         return str(int(round(time.time() * 1000000)))
@@ -40,17 +80,19 @@ class BitfinexRestMixin(RestExchange):
             body = json.dumps({})
         nonce = self._nonce()
         signature = "/api/" + url + nonce + body
-        h = hmac.new(self.key_secret.encode('utf8'), signature.encode('utf8'), hashlib.sha384)
+        h = hmac.new(
+            self.key_secret.encode("utf8"), signature.encode("utf8"), hashlib.sha384
+        )
         signature = h.hexdigest()
         return {
             "bfx-nonce": nonce,
             "bfx-apikey": self.key_id,
             "bfx-signature": signature,
-            "content-type": "application/json"
+            "content-type": "application/json",
         }
 
     def _trade_normalization(self, symbol: str, trade: list) -> dict:
-        if symbol[0] == 'f':
+        if symbol[0] == "f":
             # period is in days, from 2 to 30
             trade_id, timestamp, amount, price, period = trade
         else:
@@ -58,17 +100,17 @@ class BitfinexRestMixin(RestExchange):
             period = None
 
         ret = {
-            'timestamp': self.timestamp_normalize(timestamp),
-            'symbol': self.exchange_symbol_to_std_symbol(symbol),
-            'id': trade_id,
-            'feed': self.id,
-            'side': SELL if amount < 0 else BUY,
-            'amount': Decimal(abs(amount)),
-            'price': Decimal(price),
+            "timestamp": self.timestamp_normalize(timestamp),
+            "symbol": self.exchange_symbol_to_std_symbol(symbol),
+            "id": trade_id,
+            "feed": self.id,
+            "side": SELL if amount < 0 else BUY,
+            "amount": Decimal(abs(amount)),
+            "price": Decimal(price),
         }
 
         if period:
-            ret['period'] = period
+            ret["period"] = period
         return ret
 
     def _dedupe(self, data, last):
@@ -90,7 +132,9 @@ class BitfinexRestMixin(RestExchange):
 
         return ret
 
-    async def trades(self, symbol: str, start=None, end=None, retry_count=1, retry_delay=60):
+    async def trades(
+        self, symbol: str, start=None, end=None, retry_count=1, retry_delay=60
+    ):
         symbol = self.std_symbol_to_exchange_symbol(symbol)
         start, end = self._interval_normalize(start, end)
         start = int(start * 1000)
@@ -102,12 +146,18 @@ class BitfinexRestMixin(RestExchange):
             if start and end:
                 endpoint = f"{self.api}trades/{symbol}/hist?limit=5000&start={start}&end={end}&sort=1"
 
-            r = await self.http_conn.read(endpoint, retry_count=retry_count, retry_delay=retry_delay)
+            r = await self.http_conn.read(
+                endpoint, retry_count=retry_count, retry_delay=retry_delay
+            )
             data = json.loads(r, parse_float=Decimal)
 
             if data:
                 if data[-1][1] == start:
-                    self.log.warning("%s: number of trades exceeds exchange time window, some data will not be retrieved for time %d", self.id, start)
+                    self.log.warning(
+                        "%s: number of trades exceeds exchange time window, some data will not be retrieved for time %d",
+                        self.id,
+                        start,
+                    )
                     start += 1
                 else:
                     start = data[-1][1]
@@ -124,29 +174,39 @@ class BitfinexRestMixin(RestExchange):
 
     async def ticker(self, symbol: str, retry_count=1, retry_delay=60):
         sym = self.std_symbol_to_exchange_symbol(symbol)
-        r = await self.http_conn.read(f"{self.api}ticker/{sym}", retry_count=retry_count, retry_delay=retry_delay)
+        r = await self.http_conn.read(
+            f"{self.api}ticker/{sym}", retry_count=retry_count, retry_delay=retry_delay
+        )
         data = json.loads(r, parse_float=Decimal)
         return {
-            'symbol': symbol,
-            'feed': self.id,
-            'bid': Decimal(data[0]),
-            'ask': Decimal(data[2])
+            "symbol": symbol,
+            "feed": self.id,
+            "bid": Decimal(data[0]),
+            "ask": Decimal(data[2]),
         }
 
     async def l2_book(self, symbol: str, retry_count=0, retry_delay=60):
-        return await self._rest_book(symbol, l3=False, retry_count=retry_count, retry_delay=retry_delay)
+        return await self._rest_book(
+            symbol, l3=False, retry_count=retry_count, retry_delay=retry_delay
+        )
 
     async def l3_book(self, symbol: str, retry_count=0, retry_delay=60):
-        return await self._rest_book(symbol, l3=True, retry_count=retry_count, retry_delay=retry_delay)
+        return await self._rest_book(
+            symbol, l3=True, retry_count=retry_count, retry_delay=retry_delay
+        )
 
     async def _rest_book(self, symbol: str, l3=False, retry_count=0, retry_delay=60):
         ret = OrderBook(self.id, symbol)
 
         symbol = self.std_symbol_to_exchange_symbol(symbol)
-        funding = 'f' in symbol
+        funding = "f" in symbol
 
-        precision = 'R0' if l3 is True else 'P0'
-        r = await self.http_conn.read(f"{self.api}/book/{symbol}/{precision}?len=100", retry_delay=retry_delay, retry_count=retry_count)
+        precision = "R0" if l3 is True else "P0"
+        r = await self.http_conn.read(
+            f"{self.api}/book/{symbol}/{precision}?len=100",
+            retry_delay=retry_delay,
+            retry_count=retry_count,
+        )
         data = json.loads(r, parse_float=Decimal)
 
         if l3:
@@ -159,7 +219,11 @@ class BitfinexRestMixin(RestExchange):
                     update = abs(amount)
                 amount = Decimal(amount)
                 price = Decimal(price)
-                side = BID if (amount > 0 and not funding) or (amount < 0 and funding) else ASK
+                side = (
+                    BID
+                    if (amount > 0 and not funding) or (amount < 0 and funding)
+                    else ASK
+                )
                 if price not in ret.book[side]:
                     ret.book[side][price] = {order_id: update}
                 else:
@@ -174,12 +238,24 @@ class BitfinexRestMixin(RestExchange):
                     update = abs(amount)
                 price = Decimal(price)
                 amount = Decimal(amount)
-                side = BID if (amount > 0 and not funding) or (amount < 0 and funding) else ASK
+                side = (
+                    BID
+                    if (amount > 0 and not funding) or (amount < 0 and funding)
+                    else ASK
+                )
                 ret.book[side][price] = update
 
         return ret
 
-    async def candles(self, symbol: str, start=None, end=None, interval='1m', retry_count=1, retry_delay=60):
+    async def candles(
+        self,
+        symbol: str,
+        start=None,
+        end=None,
+        interval="1m",
+        retry_count=1,
+        retry_delay=60,
+    ):
         _interval = self.candle_mappings[interval]
         sym = self.std_symbol_to_exchange_symbol(symbol)
         base_endpoint = f"{self.api}candles/trade:{_interval}:{sym}"
@@ -192,11 +268,31 @@ class BitfinexRestMixin(RestExchange):
             else:
                 endpoint = f"{base_endpoint}/last"
 
-            r = await self.http_conn.read(endpoint, retry_delay=retry_delay, retry_count=retry_count)
+            r = await self.http_conn.read(
+                endpoint, retry_delay=retry_delay, retry_count=retry_count
+            )
             data = json.loads(r, parse_float=Decimal)
             if not isinstance(data[0], list):
                 data = [data]
-            data = [Candle(self.id, symbol, self.timestamp_normalize(e[0]), self.timestamp_normalize(e[0]) + offset, interval, None, Decimal(e[1]), Decimal(e[2]), Decimal(e[3]), Decimal(e[4]), Decimal(e[5]), True, self.timestamp_normalize(e[0]), raw=e) for e in data]
+            data = [
+                Candle(
+                    self.id,
+                    symbol,
+                    self.timestamp_normalize(e[0]),
+                    self.timestamp_normalize(e[0]) + offset,
+                    interval,
+                    None,
+                    Decimal(e[1]),
+                    Decimal(e[2]),
+                    Decimal(e[3]),
+                    Decimal(e[4]),
+                    Decimal(e[5]),
+                    True,
+                    self.timestamp_normalize(e[0]),
+                    raw=e,
+                )
+                for e in data
+            ]
             yield data
 
             if not end or len(data) < 10000:
@@ -211,39 +307,48 @@ class BitfinexRestMixin(RestExchange):
         query_string = json.dumps(payload)
         if not api:
             api = self.auth_api
-        url = f'{api}/{endpoint}'
+        url = f"{api}/{endpoint}"
         headers = self._generate_signature(endpoint, query_string)
         data = await self.http_conn.write(url, msg=query_string, header=headers)
         return json.loads(data, parse_float=Decimal)
 
-    async def place_order(self, symbol: str, side: str, order_type: str, amount: Decimal, price=None, time_in_force=None, test=False):
+    async def place_order(
+        self,
+        symbol: str,
+        side: str,
+        order_type: str,
+        amount: Decimal,
+        price=None,
+        time_in_force=None,
+        test=False,
+    ):
         if order_type == MARKET and price:
-            raise ValueError('Cannot specify price on a market order')
+            raise ValueError("Cannot specify price on a market order")
         if order_type == LIMIT:
             if not price:
-                raise ValueError('Must specify price on a limit order')
+                raise ValueError("Must specify price on a limit order")
         if side is SELL:
             amount = amount * -1
         cid = int(round(time.time() * 1000))
         ot = self.normalize_order_options(order_type)
         sym = self.std_symbol_to_exchange_symbol(symbol)
         parameters = {
-            'cid': cid,
-            'type': ot,
-            'symbol': sym,
-            'amount': str(amount),
+            "cid": cid,
+            "type": ot,
+            "symbol": sym,
+            "amount": str(amount),
         }
         if price:
-            parameters['price'] = str(price)
+            parameters["price"] = str(price)
         if time_in_force:
-            parameters['tif'] = time_in_force
+            parameters["tif"] = time_in_force
         endpoint = "v2/auth/w/order/submit"
         data = await self._post_private(endpoint, payload=parameters)
         return data
 
     async def cancel_order(self, order_id: str, **kwargs):
         endpoint = "v2/auth/w/order/cancel"
-        data = await self._post_private(endpoint, payload={'id': int(order_id)})
+        data = await self._post_private(endpoint, payload={"id": int(order_id)})
         return data
 
     async def orders(self, symbol: str = None):

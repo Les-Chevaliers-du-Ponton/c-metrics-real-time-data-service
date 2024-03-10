@@ -1,9 +1,10 @@
-'''
+"""
 Copyright (C) 2017-2024 Bryant Moscon - bmoscon@gmail.com
 
 Please see the LICENSE file for the terms and conditions
 associated with this software.
-'''
+"""
+
 from collections import defaultdict
 from cryptofeed.symbols import Symbol
 import logging
@@ -12,23 +13,30 @@ from typing import Dict, Tuple
 
 from yapic import json
 
-from cryptofeed.connection import AsyncConnection, RestEndpoint, Routes, WebsocketEndpoint
+from cryptofeed.connection import (
+    AsyncConnection,
+    RestEndpoint,
+    Routes,
+    WebsocketEndpoint,
+)
 from cryptofeed.defines import BID, ASK, BUY, DYDX, L2_BOOK, SELL, TRADES
 from cryptofeed.feed import Feed
 from cryptofeed.exchanges.mixins.dydx_rest import dYdXRestMixin
 from cryptofeed.types import OrderBook, Trade
 
-LOG = logging.getLogger('feedhandler')
+LOG = logging.getLogger("feedhandler")
 
 
 class dYdX(Feed, dYdXRestMixin):
     id = DYDX
-    websocket_endpoints = [WebsocketEndpoint('wss://api.dydx.exchange/v3/ws')]
-    rest_endpoints = [RestEndpoint('https://api.dydx.exchange', routes=Routes('/v3/markets'))]
+    websocket_endpoints = [WebsocketEndpoint("wss://api.dydx.exchange/v3/ws")]
+    rest_endpoints = [
+        RestEndpoint("https://api.dydx.exchange", routes=Routes("/v3/markets"))
+    ]
 
     websocket_channels = {
-        L2_BOOK: 'v3_orderbook',
-        TRADES: 'v3_trades',
+        L2_BOOK: "v3_orderbook",
+        TRADES: "v3_trades",
     }
     request_limit = 10
 
@@ -37,14 +45,14 @@ class dYdX(Feed, dYdXRestMixin):
         ret = {}
         info = defaultdict(dict)
 
-        for symbol, entry in data['markets'].items():
-            if entry['status'] != 'ONLINE':
+        for symbol, entry in data["markets"].items():
+            if entry["status"] != "ONLINE":
                 continue
-            stype = entry['type'].lower()
-            s = Symbol(entry['baseAsset'], entry['quoteAsset'], type=stype)
+            stype = entry["type"].lower()
+            s = Symbol(entry["baseAsset"], entry["quoteAsset"], type=stype)
             ret[s.normalized] = symbol
-            info['tick_size'][s.normalized] = entry['tickSize']
-            info['instrument_type'][s.normalized] = stype
+            info["tick_size"][s.normalized] = entry["tickSize"]
+            info["instrument_type"][s.normalized] = stype
         return ret, info
 
     def __reset(self):
@@ -52,18 +60,21 @@ class dYdX(Feed, dYdXRestMixin):
         self._offsets = {}
 
     async def _book(self, msg: dict, timestamp: float):
-        pair = self.exchange_symbol_to_std_symbol(msg['id'])
+        pair = self.exchange_symbol_to_std_symbol(msg["id"])
         delta = {BID: [], ASK: []}
 
-        if msg['type'] == 'channel_data':
+        if msg["type"] == "channel_data":
             updated = False
-            offset = int(msg['contents']['offset'])
-            for side, key in ((BID, 'bids'), (ASK, 'asks')):
-                for data in msg['contents'][key]:
+            offset = int(msg["contents"]["offset"])
+            for side, key in ((BID, "bids"), (ASK, "asks")):
+                for data in msg["contents"][key]:
                     price = Decimal(data[0])
                     amount = Decimal(data[1])
 
-                    if price in self._offsets[pair] and offset < self._offsets[pair][price]:
+                    if (
+                        price in self._offsets[pair]
+                        and offset < self._offsets[pair][price]
+                    ):
                         continue
 
                     updated = True
@@ -76,20 +87,24 @@ class dYdX(Feed, dYdXRestMixin):
                     else:
                         self._l2_book[pair].book[side][price] = amount
             if updated:
-                await self.book_callback(L2_BOOK, self._l2_book[pair], timestamp, delta=delta, raw=msg)
+                await self.book_callback(
+                    L2_BOOK, self._l2_book[pair], timestamp, delta=delta, raw=msg
+                )
         else:
             # snapshot
             self._l2_book[pair] = OrderBook(self.id, pair, max_depth=self.max_depth)
             self._offsets[pair] = {}
 
-            for side, data in msg['contents'].items():
-                side = BID if side == 'bids' else ASK
+            for side, data in msg["contents"].items():
+                side = BID if side == "bids" else ASK
                 for entry in data:
-                    self._offsets[pair][Decimal(entry['price'])] = int(entry['offset'])
-                    size = Decimal(entry['size'])
+                    self._offsets[pair][Decimal(entry["price"])] = int(entry["offset"])
+                    size = Decimal(entry["size"])
                     if size > 0:
-                        self._l2_book[pair].book[side][Decimal(entry['price'])] = size
-            await self.book_callback(L2_BOOK, self._l2_book[pair], timestamp, delta=None, raw=msg)
+                        self._l2_book[pair].book[side][Decimal(entry["price"])] = size
+            await self.book_callback(
+                L2_BOOK, self._l2_book[pair], timestamp, delta=None, raw=msg
+            )
 
     async def _trade(self, msg: dict, timestamp: float):
         """
@@ -133,31 +148,31 @@ class dYdX(Feed, dYdXRestMixin):
             }
         }
         """
-        pair = self.exchange_symbol_to_std_symbol(msg['id'])
-        for trade in msg['contents']['trades']:
+        pair = self.exchange_symbol_to_std_symbol(msg["id"])
+        for trade in msg["contents"]["trades"]:
             t = Trade(
                 self.id,
                 pair,
-                BUY if trade['side'] == 'BUY' else SELL,
-                Decimal(trade['size']),
-                Decimal(trade['price']),
-                self.timestamp_normalize(trade['createdAt']),
-                raw=trade
+                BUY if trade["side"] == "BUY" else SELL,
+                Decimal(trade["size"]),
+                Decimal(trade["price"]),
+                self.timestamp_normalize(trade["createdAt"]),
+                raw=trade,
             )
             await self.callback(TRADES, t, timestamp)
 
     async def message_handler(self, msg: str, conn: AsyncConnection, timestamp: float):
         msg = json.loads(msg, parse_float=Decimal)
 
-        if msg['type'] == 'channel_data' or msg['type'] == 'subscribed':
-            chan = self.exchange_channel_to_std(msg['channel'])
+        if msg["type"] == "channel_data" or msg["type"] == "subscribed":
+            chan = self.exchange_channel_to_std(msg["channel"])
             if chan == L2_BOOK:
                 await self._book(msg, timestamp)
             elif chan == TRADES:
                 await self._trade(msg, timestamp)
             else:
                 LOG.warning("%s: unexpected channel type received: %s", self.id, msg)
-        elif msg['type'] == 'connected':
+        elif msg["type"] == "connected":
             return
         else:
             LOG.warning("%s: Invalid message type %s", self.id, msg)
@@ -169,5 +184,5 @@ class dYdX(Feed, dYdXRestMixin):
             for symbol in symbols:
                 msg = {"type": "subscribe", "channel": chan, "id": symbol}
                 if self.exchange_channel_to_std(chan) == L2_BOOK:
-                    msg['includeOffsets'] = True
+                    msg["includeOffsets"] = True
                 await conn.write(json.dumps(msg))
