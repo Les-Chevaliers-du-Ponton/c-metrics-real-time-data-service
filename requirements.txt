@@ -11,3 +11,4 @@ websockets>=7.0
 yapic.json>=1.6.3
 black
 ruff
+redis==5.0.2
