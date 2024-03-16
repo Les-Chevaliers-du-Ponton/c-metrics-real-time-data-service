@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  listener:
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    # Add any other configurations specific to your Python application
+
+  redis:
+    image: redis:latest
+    # Add any other configurations specific to your Redis server
