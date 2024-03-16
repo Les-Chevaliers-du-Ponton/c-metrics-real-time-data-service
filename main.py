@@ -67,8 +67,8 @@ class MarketDataAggregator:
     def run_process(self, markets: dict):
         f = FeedHandler()
         all_callbacks = {
-            callbacks.L2_BOOK: redis.BookStream(),
-            callbacks.TRADES: redis.TradeStream(),
+            callbacks.L2_BOOK: redis.BookStream(host='redis'),
+            callbacks.TRADES: redis.TradeStream(host='redis'),
             # callbacks.FUNDING: redis.FundingStream,
             # callbacks.TICKER: redis.TickerStream,
             # callbacks.OPEN_INTEREST: redis.OpenInterestStream,
