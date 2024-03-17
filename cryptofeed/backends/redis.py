@@ -8,6 +8,7 @@ associated with this software.
 import datetime
 import time
 from collections import defaultdict
+import os
 
 from yapic import json
 
@@ -22,14 +23,14 @@ from redis import asyncio as aioredis
 class RedisCallback(BackendQueue):
     def __init__(
         self,
-        host="127.0.0.1",
-        port=6379,
         socket=None,
         key=None,
         none_to="None",
         numeric_type=float,
         **kwargs,
     ):
+        self.host = os.getenv('REDIS_HOST')
+        self.port = os.getenv('REDIS_PORT')
         """
         setting key lets you override the prefix on the
         key used in redis. The defaults are related to the data
@@ -94,7 +95,7 @@ class RedisZSetCallback(RedisCallback):
 
 class RedisStreamCallback(RedisCallback):
     async def writer(self):
-        conn = aioredis.from_url(self.redis)
+        conn = aioredis.Redis(host=self.host, port=self.port, decode_responses=True, ssl=True)
 
         while self.running:
             async with self.read_queue() as updates:
