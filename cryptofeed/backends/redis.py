@@ -41,7 +41,7 @@ class RedisCallback(BackendQueue):
             prefix = "unix://"
             port = None
 
-        self.redis = f"{prefix}{self.host}" + f":{port}" if port else ""
+        self.redis = f"{prefix}{self.host}" + f":{self.port}" if self.port else ""
         self.key = key if key else self.default_key
         self.numeric_type = numeric_type
         self.none_to = none_to
