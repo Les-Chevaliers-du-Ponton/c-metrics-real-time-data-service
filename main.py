@@ -96,9 +96,7 @@ class MarketDataAggregator:
 
 
 if __name__ == "__main__":
-    aggregator = MarketDataAggregator(
-        exchanges=["COINBASE"], pairs=["TIA-USD", "BTC-USD", "ETH-USD"]
-    )
+    aggregator = MarketDataAggregator(exchanges=["COINBASE"], ref_currency='USD')
     aggregator.start_all_feeds()
     while True:
         pass
