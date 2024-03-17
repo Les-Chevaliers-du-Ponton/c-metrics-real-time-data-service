@@ -30,7 +30,7 @@ class MarketDataAggregator:
     def get_markets(self) -> dict:
         markets = dict()
         for exchange_name, exchange_object in self.exchanges.items():
-            pairs = exchange_object.symbols("config.yaml")
+            pairs = exchange_object.symbols())
             filtered_pairs = list()
             for pair in pairs:
                 if not self.pairs or pair in self.pairs:
@@ -81,7 +81,6 @@ class MarketDataAggregator:
                     channels=list(all_callbacks.keys()),
                     symbols=exchange_pairs,
                     callbacks=all_callbacks,
-                    config="config.yaml",
                 )
             )
         f.run()
