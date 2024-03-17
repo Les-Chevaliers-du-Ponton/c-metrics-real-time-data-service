@@ -20,5 +20,7 @@ RUN pip install --no-cache-dir cython redis asyncpg && \
     pip install --no-cache-dir -r requirements.txt && \
     python3 setup.py build_ext --inplace
 
-CMD ["/app/main.py"]
-ENTRYPOINT ["python"]
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+CMD ["/usr/local/bin/start.sh"]
