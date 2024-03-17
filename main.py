@@ -33,7 +33,7 @@ class MarketDataAggregator:
         max_cpu_amount: int = None,
     ):
         self.cpu_amount = (
-            max_cpu_amount if max_cpu_amount else multiprocessing.cpu_count() - 1
+            max_cpu_amount if max_cpu_amount else multiprocessing.cpu_count()
         )
         self.exchanges = (
             {exchange: EXCHANGE_MAP[exchange] for exchange in exchanges}
