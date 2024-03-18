@@ -9,7 +9,7 @@ async def get_available_redis_streams(
     i = 0
     all_streams = list()
     while True:
-        i, streams = await redis_server.scan(i, _type="STREAM", match=streams)
+        i, streams = await redis_server.scan(i, _type="STREAM")
         all_streams += streams
         if i == 0:
             return all_streams
