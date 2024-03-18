@@ -24,13 +24,15 @@ class RedisCallback(BackendQueue):
     def __init__(
         self,
         socket=None,
+        host="127.0.0.1",
+        port=6379,
         key=None,
         none_to="None",
         numeric_type=float,
         **kwargs,
     ):
-        self.host = os.getenv("REDIS_HOST")
-        self.port = os.getenv("REDIS_PORT")
+        self.host = os.getenv("REDIS_HOST", host)
+        self.port = os.getenv("REDIS_PORT", port)
         """
         setting key lets you override the prefix on the
         key used in redis. The defaults are related to the data
