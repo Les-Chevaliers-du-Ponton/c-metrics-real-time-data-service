@@ -96,7 +96,9 @@ class RedisZSetCallback(RedisCallback):
 
 class RedisStreamCallback(RedisCallback):
     async def writer(self):
-        conn = aioredis.Redis(host=self.host, port=self.port, decode_responses=True, ssl=True)
+        conn = aioredis.Redis(
+            host=self.host, port=self.port, decode_responses=True, ssl=True
+        )
 
         while self.running:
             async with self.read_queue() as updates:

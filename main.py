@@ -67,8 +67,8 @@ class MarketDataAggregator:
     def run_process(self, markets: dict):
         f = FeedHandler()
         all_callbacks = {
-            callbacks.L2_BOOK: redis.BookStream(host='redis'),
-            callbacks.TRADES: redis.TradeStream(host='redis'),
+            callbacks.L2_BOOK: redis.BookStream(host="redis"),
+            callbacks.TRADES: redis.TradeStream(host="redis"),
             # callbacks.FUNDING: redis.FundingStream,
             # callbacks.TICKER: redis.TickerStream,
             # callbacks.OPEN_INTEREST: redis.OpenInterestStream,
@@ -96,7 +96,7 @@ class MarketDataAggregator:
 
 
 if __name__ == "__main__":
-    aggregator = MarketDataAggregator(exchanges=["COINBASE"], ref_currency='USD')
+    aggregator = MarketDataAggregator(exchanges=["COINBASE"], ref_currency="USD")
     aggregator.start_all_feeds()
     while True:
         pass
