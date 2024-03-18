@@ -1,3 +1,4 @@
+import os
 import math
 import multiprocessing
 
@@ -5,6 +6,22 @@ from cryptofeed import FeedHandler
 from cryptofeed import defines as callbacks
 from cryptofeed.backends import redis
 from cryptofeed.exchanges import EXCHANGE_MAP
+
+
+BASE_CONFIG = {
+    "log": {"filename": "demo.log", "level": "DEBUG", "disabled": True},
+    "backend_multiprocessing": True,
+}
+
+
+def get_api_keys(exchange: str, websocket: bool = False) -> dict:
+    key = os.getenv(f"{exchange}_api_key")
+    secret = os.getenv(f"{exchange}_api_secret")
+    if key and secret:
+        if websocket:
+            return dict(key_id=key, key_secret=secret)
+        else:
+            return dict(apiKey=key, secret=secret)
 
 
 class MarketDataAggregator:
@@ -16,7 +33,7 @@ class MarketDataAggregator:
         max_cpu_amount: int = None,
     ):
         self.cpu_amount = (
-            max_cpu_amount if max_cpu_amount else multiprocessing.cpu_count() - 1
+            max_cpu_amount if max_cpu_amount else multiprocessing.cpu_count()
         )
         self.exchanges = (
             {exchange: EXCHANGE_MAP[exchange] for exchange in exchanges}
@@ -27,10 +44,19 @@ class MarketDataAggregator:
         self.ref_currency = ref_currency
         self.markets = self.get_markets()
 
+    @staticmethod
+    def get_feed_config(exchange_name: str) -> dict:
+        feed_config = BASE_CONFIG.copy()
+        keys = get_api_keys(exchange_name.lower(), websocket=True)
+        if keys:
+            feed_config[exchange_name.lower()] = keys
+        return feed_config
+
     def get_markets(self) -> dict:
         markets = dict()
         for exchange_name, exchange_object in self.exchanges.items():
-            pairs = exchange_object.symbols("config.yaml")
+            config = self.get_feed_config(exchange_name)
+            pairs = exchange_object.symbols(config)
             filtered_pairs = list()
             for pair in pairs:
                 if not self.pairs or pair in self.pairs:
@@ -67,8 +93,8 @@ class MarketDataAggregator:
     def run_process(self, markets: dict):
         f = FeedHandler()
         all_callbacks = {
-            callbacks.L2_BOOK: redis.BookStream(host="redis"),
-            callbacks.TRADES: redis.TradeStream(host="redis"),
+            callbacks.L2_BOOK: redis.BookStream(),
+            callbacks.TRADES: redis.TradeStream(),
             # callbacks.FUNDING: redis.FundingStream,
             # callbacks.TICKER: redis.TickerStream,
             # callbacks.OPEN_INTEREST: redis.OpenInterestStream,
@@ -76,12 +102,13 @@ class MarketDataAggregator:
             # callbacks.CANDLES: redis.CandlesStream,
         }
         for exchange, exchange_pairs in markets.items():
+            config = self.get_feed_config(exchange)
             f.add_feed(
                 EXCHANGE_MAP[exchange](
                     channels=list(all_callbacks.keys()),
                     symbols=exchange_pairs,
                     callbacks=all_callbacks,
-                    config="config.yaml",
+                    config=config,
                 )
             )
         f.run()

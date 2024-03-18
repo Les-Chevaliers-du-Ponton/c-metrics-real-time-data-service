@@ -10,7 +10,7 @@ import logging
 from collections import defaultdict
 from typing import Tuple, Callable, List, Union
 
-from aiohttp.typedefs import StrOrURL 
+from aiohttp.typedefs import StrOrURL
 from cryptofeed.types import OrderBook
 
 from cryptofeed.callback import Callback
@@ -33,7 +33,9 @@ from cryptofeed.defines import (
 )
 from cryptofeed.exceptions import BidAskOverlapping
 from cryptofeed.exchange import Exchange
+
 LOG = logging.getLogger("feedhandler")
+
 
 class Feed(Exchange):
     def __init__(
