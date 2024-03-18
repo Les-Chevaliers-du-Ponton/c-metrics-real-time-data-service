@@ -24,13 +24,15 @@ class RedisCallback(BackendQueue):
     def __init__(
         self,
         socket=None,
+        host="127.0.0.1",
+        port=6379,
         key=None,
         none_to="None",
         numeric_type=float,
         **kwargs,
     ):
-        self.host = os.getenv('REDIS_HOST')
-        self.port = os.getenv('REDIS_PORT')
+        self.host = os.getenv("REDIS_HOST", host)
+        self.port = os.getenv("REDIS_PORT", port)
         """
         setting key lets you override the prefix on the
         key used in redis. The defaults are related to the data
@@ -40,8 +42,7 @@ class RedisCallback(BackendQueue):
         if socket:
             prefix = "unix://"
             port = None
-
-        self.redis = f"{prefix}{host}" + f":{port}" if port else ""
+        self.redis = f"{prefix}{self.host}" + f":{self.port}" if self.port else ""
         self.key = key if key else self.default_key
         self.numeric_type = numeric_type
         self.none_to = none_to
@@ -115,6 +116,8 @@ class RedisStreamCallback(RedisCallback):
                         pipe = pipe.xadd(
                             f"{self.key}-{update['exchange']}-{update['symbol']}",
                             update,
+                            maxlen=1,
+                            approximate=True,
                         )
                     await pipe.execute()
 
