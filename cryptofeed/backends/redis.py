@@ -29,8 +29,8 @@ class RedisCallback(BackendQueue):
         numeric_type=float,
         **kwargs,
     ):
-        self.host = os.getenv('REDIS_HOST')
-        self.port = os.getenv('REDIS_PORT')
+        self.host = os.getenv("REDIS_HOST")
+        self.port = os.getenv("REDIS_PORT")
         """
         setting key lets you override the prefix on the
         key used in redis. The defaults are related to the data
@@ -95,7 +95,9 @@ class RedisZSetCallback(RedisCallback):
 
 class RedisStreamCallback(RedisCallback):
     async def writer(self):
-        conn = aioredis.Redis(host=self.host, port=self.port, decode_responses=True, ssl=True)
+        conn = aioredis.Redis(
+            host=self.host, port=self.port, decode_responses=True, ssl=True
+        )
 
         while self.running:
             async with self.read_queue() as updates:
@@ -115,6 +117,8 @@ class RedisStreamCallback(RedisCallback):
                         pipe = pipe.xadd(
                             f"{self.key}-{update['exchange']}-{update['symbol']}",
                             update,
+                            maxlen=1,
+                            approximate=True,
                         )
                     await pipe.execute()
 
