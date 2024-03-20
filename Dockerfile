@@ -12,5 +12,8 @@ RUN pip install --no-cache-dir asyncpg
 RUN pip install --no-cache-dir -r requirements.txt
 RUN python3 setup.py build_ext --inplace
 
+WORKDIR /app
+COPY . /app
+
 CMD ["/app/main.py"]
 ENTRYPOINT ["python"]
