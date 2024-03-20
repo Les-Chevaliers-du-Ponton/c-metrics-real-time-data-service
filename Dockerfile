@@ -2,6 +2,7 @@ FROM python:3.10-slim-bullseye
 
 RUN apt update
 RUN apt install gcc git -y
+RUN apt-get install g++ -y
 
 WORKDIR /app
 COPY . /app

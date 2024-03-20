@@ -97,9 +97,8 @@ class RedisZSetCallback(RedisCallback):
 
 class RedisStreamCallback(RedisCallback):
     async def writer(self):
-        conn = aioredis.Redis(
-            host=self.host, port=self.port, decode_responses=True, ssl=True
-        )
+        # ssl=True needed for serverless Elasticache
+        conn = aioredis.Redis(host=self.host, port=self.port, decode_responses=True)
 
         while self.running:
             async with self.read_queue() as updates:
