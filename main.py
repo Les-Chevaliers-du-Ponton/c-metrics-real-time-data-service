@@ -107,11 +107,16 @@ class MarketDataAggregator:
         }
         for exchange, exchange_pairs in markets.items():
             config = self.get_feed_config(exchange)
-            for pair in exchange_pairs:
+            sublist_size = 10
+            sub_lists = [
+                exchange_pairs[i : i + sublist_size]
+                for i in range(0, len(exchange_pairs), sublist_size)
+            ]
+            for pairs in sub_lists:
                 f.add_feed(
                     EXCHANGE_MAP[exchange](
                         channels=list(all_callbacks.keys()),
-                        symbols=[pair],
+                        symbols=pairs,
                         callbacks=all_callbacks,
                         config=config,
                     )
