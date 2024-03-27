@@ -9,10 +9,11 @@ from cryptofeed import defines as callbacks
 from cryptofeed.backends import redis
 from cryptofeed.exchanges import EXCHANGE_MAP
 
+
 load_dotenv()
 
 BASE_CONFIG = {
-    "log": {"filename": "demo.log", "level": "DEBUG", "disabled": True},
+    "log": {"disabled": True},
     "backend_multiprocessing": True,
 }
 
@@ -106,14 +107,15 @@ class MarketDataAggregator:
         }
         for exchange, exchange_pairs in markets.items():
             config = self.get_feed_config(exchange)
-            f.add_feed(
-                EXCHANGE_MAP[exchange](
-                    channels=list(all_callbacks.keys()),
-                    symbols=exchange_pairs,
-                    callbacks=all_callbacks,
-                    config=config,
+            for pair in exchange_pairs:
+                f.add_feed(
+                    EXCHANGE_MAP[exchange](
+                        channels=list(all_callbacks.keys()),
+                        symbols=[pair],
+                        callbacks=all_callbacks,
+                        config=config,
+                    )
                 )
-            )
         f.run()
 
     def start_all_feeds(self):
