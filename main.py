@@ -117,13 +117,14 @@ class MarketDataAggregator:
         sub_markets = self.break_down_pairs_per_cpu()
         processes = list()
         for markets in sub_markets:
-            process = multiprocessing.Process(target=self.run_process, args=(markets,))
-            processes.append(process)
-            process.start()
+            self.run_process(markets)
+            # process = multiprocessing.Process(target=self.run_process, args=(markets,))
+            # processes.append(process)
+            # process.start()
 
 
 if __name__ == "__main__":
-    aggregator = MarketDataAggregator(exchanges=["COINBASE"], ref_currency="USD")
+    aggregator = MarketDataAggregator(exchanges=["COINBASE"], pairs=['BTC-USD'], ref_currency="USD")
     aggregator.start_all_feeds()
     while True:
         pass
