@@ -190,9 +190,10 @@ class Coinbase(Feed, CoinbaseRestMixin):
                     self._l2_book[pair].book[side][price] = amount
                     delta[side].append((price, amount))
 
-                await self.book_callback(
-                    L2_BOOK, self._l2_book[pair], timestamp, timestamp=ts, raw=msg, delta=delta
-                )
+        if pair in self._l2_book:
+            await self.book_callback(
+                L2_BOOK, self._l2_book[pair], timestamp, timestamp=ts, raw=msg, delta=delta
+            )
 
     async def message_handler(self, msg: str, conn: AsyncConnection, timestamp: float):
         # PERF perf_start(self.id, 'msg')
