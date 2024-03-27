@@ -181,6 +181,7 @@ class Coinbase(Feed, CoinbaseRestMixin):
             price = Decimal(update["price_level"])
             amount = Decimal(update["new_quantity"])
 
+        if pair in self._l2_book:
             if amount == 0:
                 if price in self._l2_book[pair].book[side]:
                     del self._l2_book[pair].book[side][price]
