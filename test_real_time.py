@@ -9,8 +9,9 @@ REDIS = Redis(
 
 def test_live_data(exchange: str, pair: str, channel: str):
     while True:
+        key = f"{channel}-{exchange.upper()}-{pair.upper()}"
         data = REDIS.xread(
-            streams={f"{channel}-{exchange.upper()}-{pair.upper()}": "$"}, block=0
+            streams={"{real-time}-" + key: "$"}, block=0
         )
         data = data[0][1][0][1]
         print(f'{data["side"]} {data["amount"]} @ {data["price"]}')
