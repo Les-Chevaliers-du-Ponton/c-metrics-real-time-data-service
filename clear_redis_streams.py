@@ -1,6 +1,9 @@
 import os
 import asyncio
+from dotenv import load_dotenv
 import redis.asyncio as async_redis
+
+load_dotenv()
 
 
 async def get_available_redis_streams(

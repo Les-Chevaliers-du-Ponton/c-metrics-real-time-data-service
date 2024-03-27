@@ -120,7 +120,7 @@ class RedisStreamCallback(RedisCallback):
                         pipe = pipe.xadd(
                             "{real-time}-" + key,
                             update,
-                            maxlen=100 if self.key == 'trades' else 1,
+                            maxlen=100 if self.key == "trades" else 1,
                             approximate=True,
                         )
                     await pipe.execute()
