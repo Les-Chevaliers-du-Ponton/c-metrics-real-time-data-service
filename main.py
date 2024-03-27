@@ -13,7 +13,7 @@ from cryptofeed.exchanges import EXCHANGE_MAP
 load_dotenv()
 
 BASE_CONFIG = {
-    "log": {"disabled": True},
+    "log": {"filename": "c-metrics-real-time-service.log", "level": "DEBUG", "disabled": True},
     "backend_multiprocessing": True,
 }
 
