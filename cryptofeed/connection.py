@@ -395,7 +395,7 @@ class WSAsyncConn(AsyncConnection):
                 )
 
             self.conn = await websockets.connect(
-                self.address, **self.ws_kwargs, open_timeout=60
+                self.address, **self.ws_kwargs, open_timeout=30
             )
         self.sent = 0
         self.received = 0
