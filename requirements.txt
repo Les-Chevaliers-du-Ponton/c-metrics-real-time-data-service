@@ -10,3 +10,4 @@ uvloop
 websockets>=7.0
 yapic.json>=1.6.3
 redis==5.0.2
+python-dotenv==1.0.1

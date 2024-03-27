@@ -2,11 +2,14 @@ import os
 import math
 import multiprocessing
 
+from dotenv import load_dotenv
+
 from cryptofeed import FeedHandler
 from cryptofeed import defines as callbacks
 from cryptofeed.backends import redis
 from cryptofeed.exchanges import EXCHANGE_MAP
 
+load_dotenv()
 
 BASE_CONFIG = {
     "log": {"filename": "demo.log", "level": "DEBUG", "disabled": True},

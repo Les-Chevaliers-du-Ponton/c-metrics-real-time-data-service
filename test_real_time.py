@@ -1,20 +1,22 @@
+import os
+from dotenv import load_dotenv
 from redis import Redis
 
+load_dotenv()
+
 REDIS = Redis(
-    host="cmetrics-cache-w3yveh.serverless.use1.cache.amazonaws.com",
-    port=6379,
+    host=os.getenv("REDIS_HOST"),
+    port=os.getenv("REDIS_PORT"),
     decode_responses=True,
-    ssl=True,
 )
 
 
 def test_live_data(exchange: str, pair: str, channel: str):
     while True:
-        data = REDIS.xread(
-            streams={f"{channel}-{exchange.upper()}-{pair.upper()}": "$"}, block=0
-        )
-        data = data[0][1][0][1]
-        print(f'{data["side"]} {data["amount"]} @ {data["price"]}')
+        key = f"{channel}-{exchange.upper()}-{pair.upper()}"
+        data = REDIS.xread(streams={"{real-time}-" + key: "$"}, block=0)
+        data = data[0][1]
+        print(data)
 
 
 if __name__ == "__main__":
