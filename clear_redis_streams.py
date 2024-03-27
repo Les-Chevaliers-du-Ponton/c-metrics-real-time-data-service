@@ -30,4 +30,5 @@ async def clear_streams():
         print(f"Cleared {stream} stream")
 
 
-asyncio.run(clear_streams())
+loop = asyncio.get_event_loop()
+loop.run_until_complete(clear_streams())
