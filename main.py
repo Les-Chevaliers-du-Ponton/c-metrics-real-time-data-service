@@ -2,11 +2,15 @@ import os
 import math
 import multiprocessing
 
+from dotenv import load_dotenv
+
 from cryptofeed import FeedHandler
 from cryptofeed import defines as callbacks
 from cryptofeed.backends import redis
 from cryptofeed.exchanges import EXCHANGE_MAP
 
+
+load_dotenv()
 
 BASE_CONFIG = {
     "log": {"filename": "demo.log", "level": "DEBUG", "disabled": True},
@@ -124,7 +128,7 @@ class MarketDataAggregator:
 
 
 if __name__ == "__main__":
-    aggregator = MarketDataAggregator(exchanges=["COINBASE"], pairs=['BTC-USD'], ref_currency="USD")
+    aggregator = MarketDataAggregator(exchanges=["COINBASE"], ref_currency="USD")
     aggregator.start_all_feeds()
     while True:
         pass
