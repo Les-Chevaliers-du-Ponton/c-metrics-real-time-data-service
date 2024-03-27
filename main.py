@@ -13,7 +13,7 @@ from cryptofeed.exchanges import EXCHANGE_MAP
 load_dotenv()
 
 BASE_CONFIG = {
-    "log": {"filename": "demo.log", "level": "DEBUG", "disabled": True},
+    "log": {"disabled": True},
     "backend_multiprocessing": True,
 }
 
