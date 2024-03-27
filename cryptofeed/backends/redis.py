@@ -116,7 +116,7 @@ class RedisStreamCallback(RedisCallback):
                                 update["timestamp"].timetuple()
                             )
                         key = f'{self.key}-{update["exchange"]}-{update["symbol"]}'
-                        print(update)
+
                         pipe = pipe.xadd(
                             "{real-time}-" + key,
                             update,
