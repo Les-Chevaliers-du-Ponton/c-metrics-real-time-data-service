@@ -112,6 +112,8 @@ class MarketDataAggregator:
                 exchange_pairs[i : i + sublist_size]
                 for i in range(0, len(exchange_pairs), sublist_size)
             ]
+            # TODO: auto calculate optimal trade-off for amount of pairs per sublist based on websocket rate limit
+            #  and pair liquidity (not too many liquid pairs on the same socket)
             for pairs in sub_lists:
                 f.add_feed(
                     EXCHANGE_MAP[exchange](
