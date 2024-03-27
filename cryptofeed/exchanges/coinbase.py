@@ -181,18 +181,18 @@ class Coinbase(Feed, CoinbaseRestMixin):
             price = Decimal(update["price_level"])
             amount = Decimal(update["new_quantity"])
 
-        if pair in self._l2_book:
-            if amount == 0:
-                if price in self._l2_book[pair].book[side]:
-                    del self._l2_book[pair].book[side][price]
-                    delta[side].append((price, 0))
-            else:
-                self._l2_book[pair].book[side][price] = amount
-                delta[side].append((price, amount))
+            if pair in self._l2_book:
+                if amount == 0:
+                    if price in self._l2_book[pair].book[side]:
+                        del self._l2_book[pair].book[side][price]
+                        delta[side].append((price, 0))
+                else:
+                    self._l2_book[pair].book[side][price] = amount
+                    delta[side].append((price, amount))
 
-            await self.book_callback(
-                L2_BOOK, self._l2_book[pair], timestamp, timestamp=ts, raw=msg, delta=delta
-            )
+                await self.book_callback(
+                    L2_BOOK, self._l2_book[pair], timestamp, timestamp=ts, raw=msg, delta=delta
+                )
 
     async def message_handler(self, msg: str, conn: AsyncConnection, timestamp: float):
         # PERF perf_start(self.id, 'msg')
