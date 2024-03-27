@@ -121,10 +121,9 @@ class MarketDataAggregator:
         sub_markets = self.break_down_pairs_per_cpu()
         processes = list()
         for markets in sub_markets:
-            self.run_process(markets)
-            # process = multiprocessing.Process(target=self.run_process, args=(markets,))
-            # processes.append(process)
-            # process.start()
+            process = multiprocessing.Process(target=self.run_process, args=(markets,))
+            processes.append(process)
+            process.start()
 
 
 if __name__ == "__main__":
