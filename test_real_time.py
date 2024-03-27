@@ -3,8 +3,7 @@ from redis import Redis
 REDIS = Redis(
     host="cmetrics-cache-0001-001.w3yveh.0001.use1.cache.amazonaws.com",
     port=6379,
-    decode_responses=True,
-    ssl=True,
+    decode_responses=True
 )
 
 
